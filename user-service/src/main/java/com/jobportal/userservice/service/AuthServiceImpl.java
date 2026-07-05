@@ -10,6 +10,7 @@ import com.jobportal.userservice.exception.AdminRoleNotAllowedException;
 import com.jobportal.userservice.exception.EmailAlreadyExistsException;
 import com.jobportal.userservice.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import java.time.Instant;
 import static com.jobportal.userservice.util.UserMapper.toDto;
@@ -18,6 +19,7 @@ import static com.jobportal.userservice.util.UserMapper.toDto;
 @RequiredArgsConstructor
 public class AuthServiceImpl implements AuthService {
     private final UserRepository repository;
+    private final PasswordEncoder passwordEncoder;
 
     @Override
     public AuthResponse signup(SignupRequest request) {
@@ -31,7 +33,7 @@ public class AuthServiceImpl implements AuthService {
         var user = User.builder()
                 .fullName(request.fullName())
                 .email(request.email())
-                .password(request.password())
+                .password(passwordEncoder.encode(request.password()))
                 .role(request.role())
                 .phone(request.phone())
                 .status(UserStatus.ACTIVE)
