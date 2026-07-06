@@ -1,0 +1,17 @@
+server:
+  port: 8082
+
+spring:
+  application:
+    name: company-service
+    description: Company Service
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: false
+    open-in-view: false
+  datasource:
+    url: jdbc:postgresql://localhost:5432/job-portal-company-db
+    username: postgres
+    password: postgresPassword
+    driver-class-name: org.postgresql.Driver
