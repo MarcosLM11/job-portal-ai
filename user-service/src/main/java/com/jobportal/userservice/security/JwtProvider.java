@@ -1,0 +1,30 @@
+package com.jobportal.userservice.security;
+
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.security.Keys;
+import org.springframework.security.core.Authentication;
+import javax.crypto.SecretKey;
+import java.util.Date;
+
+public class JwtProvider {
+    private static final String SECRET_KEY = "clave_secreta_123";
+    private static final Integer EXPIRATION_TIME = 3600000;
+    private final SecretKey  secretKey = Keys.hmacShaKeyFor(SECRET_KEY.getBytes());
+
+    public String generateToken(Authentication auth, Long userId) {
+        var authorities = auth.getAuthorities();
+        var roles = authorities
+                .stream()
+                .map(a -> a.getAuthority())
+                .reduce((a, b) -> a + "," + b)
+                .orElse("");
+        return Jwts.builder()
+                .issuedAt(new Date())
+                .expiration(new Date(System.currentTimeMillis() + EXPIRATION_TIME))
+                .claim("email", auth.getName())
+                .claim("authorities", roles)
+                .claim("userId", userId)
+                .signWith(secretKey)
+                .compact();
+    }
+}

@@ -36,4 +36,8 @@ target/
 
 ## CLAUDE
 .claude/
+.claude-plugin/
 CLAUDE.md
+
+## DOCS
+docs/

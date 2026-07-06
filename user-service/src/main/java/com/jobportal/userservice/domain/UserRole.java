@@ -3,6 +3,5 @@ package com.jobportal.userservice.domain;
 public enum UserRole {
     ROLE_ADMIN,
     ROLE_JOB_SEEKER,
-    ROLE_EMPLOYER,
-
+    ROLE_EMPLOYER
 }

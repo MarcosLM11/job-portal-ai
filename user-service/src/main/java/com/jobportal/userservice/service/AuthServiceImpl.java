@@ -8,23 +8,33 @@ import com.jobportal.userservice.dto.LoginRequest;
 import com.jobportal.userservice.dto.SignupRequest;
 import com.jobportal.userservice.exception.AdminRoleNotAllowedException;
 import com.jobportal.userservice.exception.EmailAlreadyExistsException;
+import com.jobportal.userservice.exception.InvalidPasswordException;
 import com.jobportal.userservice.repository.UserRepository;
+import com.jobportal.userservice.security.CustomUserDetailsService;
+import com.jobportal.userservice.security.JwtProvider;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import java.time.Instant;
 import static com.jobportal.userservice.util.UserMapper.toDto;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class AuthServiceImpl implements AuthService {
-    private final UserRepository repository;
+    private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final JwtProvider jwtProvider;
+    private final CustomUserDetailsService customUserDetailsService;
 
     @Override
     public AuthResponse signup(SignupRequest request) {
 
-        if (repository.existsByEmail(request.email()))
+        if (Boolean.TRUE.equals(userRepository.existsByEmail(request.email())))
             throw new EmailAlreadyExistsException(request.email());
 
         if (UserRole.ROLE_ADMIN.equals(request.role()))
@@ -40,18 +50,46 @@ public class AuthServiceImpl implements AuthService {
                 .lastLogin(Instant.now())
                 .build();
 
-        var savedUser = repository.save(user);
+        var savedUser = userRepository.save(user);
+        log.info("User signed up successfully: {}", savedUser.getId());
+
+        var authentication = new UsernamePasswordAuthenticationToken(user.getEmail(),user.getPassword());
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+        var jwt = jwtProvider.generateToken(authentication,savedUser.getId());
 
         return AuthResponse.builder()
                 .title("Welcome to JobPortal " +  request.fullName())
                 .message("Registered Successfully!")
-                .jwt("JWT")
+                .jwt(jwt)
                 .user(toDto(savedUser))
                 .build();
     }
 
     @Override
     public AuthResponse login(LoginRequest request) {
-        return null;
+        var authentication = authenticate(request.email(), request.password());
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+
+        var user = userRepository.findByEmail(request.email()).orElseThrow();
+        var jwt = jwtProvider.generateToken(authentication, user.getId());
+        user.setLastLogin(Instant.now());
+        userRepository.save(user);
+
+        return AuthResponse.builder()
+                .title("Welcome back to JobPortal " +  user.getFullName())
+                .message("Logged in Successfully!")
+                .jwt(jwt)
+                .user(toDto(user))
+                .build();
+    }
+
+    private Authentication authenticate(String email, String password) {
+        var userDetails = customUserDetailsService.loadUserByUsername(email);
+
+        if (!passwordEncoder.matches(password, userDetails.getPassword())) {
+            throw new InvalidPasswordException(password);
+        }
+
+        return new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
     }
 }
