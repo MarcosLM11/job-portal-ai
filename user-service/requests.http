@@ -1,0 +1,196 @@
+### Variables
+@baseUrl = http://localhost:8081
+@contentType = application/json
+
+### =============================================================
+### AUTH ENDPOINTS  (/api/auth)
+### =============================================================
+
+### [AUTH-1] Signup - Job Seeker (happy path)
+POST {{baseUrl}}/api/auth/signup
+Content-Type: {{contentType}}
+
+{
+  "fullName": "Jane Doe",
+  "email": "jane.doe@example.com",
+  "password": "secret123",
+  "phone": "+34600000001",
+  "role": "ROLE_JOB_SEEKER"
+}
+
+###
+
+### [AUTH-2] Signup - Employer (happy path)
+POST {{baseUrl}}/api/auth/signup
+Content-Type: {{contentType}}
+
+{
+  "fullName": "Acme Corp HR",
+  "email": "hr@acme.com",
+  "password": "secret123",
+  "phone": "+34600000002",
+  "role": "ROLE_EMPLOYER"
+}
+
+###
+
+### [AUTH-3] Signup - Admin role rejected (expect 403)
+POST {{baseUrl}}/api/auth/signup
+Content-Type: {{contentType}}
+
+{
+  "fullName": "Bad Actor",
+  "email": "admin.attempt@example.com",
+  "password": "secret123",
+  "phone": "+34600000099",
+  "role": "ROLE_ADMIN"
+}
+
+###
+
+### [AUTH-4] Signup - Duplicate email (expect 409)
+POST {{baseUrl}}/api/auth/signup
+Content-Type: {{contentType}}
+
+{
+  "fullName": "Jane Doe Again",
+  "email": "jane.doe@example.com",
+  "password": "secret123",
+  "phone": "+34600000001",
+  "role": "ROLE_JOB_SEEKER"
+}
+
+###
+
+### [AUTH-5] Signup - Missing required fields (expect 400)
+POST {{baseUrl}}/api/auth/signup
+Content-Type: {{contentType}}
+
+{
+  "email": "no.name@example.com",
+  "password": "secret123",
+  "role": "ROLE_JOB_SEEKER"
+}
+
+###
+
+### [AUTH-6] Login - Valid credentials (happy path)
+POST {{baseUrl}}/api/auth/login
+Content-Type: {{contentType}}
+
+{
+  "email": "jane.doe@example.com",
+  "password": "secret123"
+}
+
+###
+
+### [AUTH-7] Login - Wrong password (expect 401)
+POST {{baseUrl}}/api/auth/login
+Content-Type: {{contentType}}
+
+{
+  "email": "jane.doe@example.com",
+  "password": "wrongpassword"
+}
+
+###
+
+### [AUTH-8] Login - Non-existent user (expect 404)
+POST {{baseUrl}}/api/auth/login
+Content-Type: {{contentType}}
+
+{
+  "email": "ghost@example.com",
+  "password": "secret123"
+}
+
+###
+
+### [AUTH-9] Login - Invalid email format (expect 400)
+POST {{baseUrl}}/api/auth/login
+Content-Type: {{contentType}}
+
+{
+  "email": "not-an-email",
+  "password": "secret123"
+}
+
+###
+
+### =============================================================
+### USER ENDPOINTS  (/api/v1/users)
+### =============================================================
+
+### [USER-1] Get own profile by email header (happy path)
+GET {{baseUrl}}/api/v1/users/me
+X-User-Email: jane.doe@example.com
+
+###
+
+### [USER-2] Get own profile - Non-existent user (expect 404)
+GET {{baseUrl}}/api/v1/users/me
+X-User-Email: ghost@example.com
+
+###
+
+### [USER-3] Update own profile (happy path)
+POST {{baseUrl}}/api/v1/users/me
+Content-Type: {{contentType}}
+X-User-Email: jane.doe@example.com
+
+{
+  "fullName": "Jane Updated",
+  "phone": "+34699999999",
+  "profileImage": "https://example.com/avatar/jane.png"
+}
+
+###
+
+### [USER-4] Update own profile - Non-existent user (expect 404)
+POST {{baseUrl}}/api/v1/users/me
+Content-Type: {{contentType}}
+X-User-Email: ghost@example.com
+
+{
+  "fullName": "Ghost",
+  "phone": "+34600000000",
+  "profileImage": null
+}
+
+###
+
+### [USER-5] Get user by ID (happy path — replace 1 with a real ID)
+GET {{baseUrl}}/api/v1/users/1
+
+###
+
+### [USER-6] Get user by ID - Not found (expect 404)
+GET {{baseUrl}}/api/v1/users/999999
+
+###
+
+### [USER-7] Get all users
+GET {{baseUrl}}/api/v1/users
+
+###
+
+### [USER-8] Suspend user (replace 1 with a real ID)
+PATCH {{baseUrl}}/api/v1/users/1/suspend
+
+###
+
+### [USER-9] Activate user (replace 1 with a real ID)
+PATCH {{baseUrl}}/api/v1/users/1/activate
+
+###
+
+### [USER-10] Soft-delete user (replace 1 with a real ID)
+PATCH {{baseUrl}}/api/v1/users/1/delete
+
+###
+
+### [USER-11] Suspend non-existent user (expect 404)
+PATCH {{baseUrl}}/api/v1/users/999999/suspend
+
+###
