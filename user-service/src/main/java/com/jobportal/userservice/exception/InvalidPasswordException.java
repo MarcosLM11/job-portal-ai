@@ -1,7 +1,5 @@
 package com.jobportal.userservice.exception;
 
-public class InvalidPasswordException extends RuntimeException {
-    public InvalidPasswordException(String password) {
-        super("Invalid password: " + password);
-    }
+public class InvalidPasswordException extends UserServiceException {
+    public InvalidPasswordException() { super("Invalid credentials"); }
 }
