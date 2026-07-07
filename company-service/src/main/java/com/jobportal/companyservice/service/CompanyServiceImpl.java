@@ -122,7 +122,7 @@ public class CompanyServiceImpl implements CompanyService {
 
     @Override
     public Company getCompanyEntityById(Long companyId) {
-        return companyRepository.findById(companyId).orElseThrow(() -> new CompanyNotFoundException(companyId));
+        return companyRepository.findById(companyId).orElseThrow(() -> new CompanyNotFoundException("Company not found with id: " + companyId));
     }
 
     private List<SocialLink> mapSocialLinks(List<SocialLinkResponse> socialLinks) {
