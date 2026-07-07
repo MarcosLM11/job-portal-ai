@@ -7,9 +7,15 @@ import com.jobportal.userservice.util.UserMapper;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
-import java.util.stream.Collectors;
 import static com.jobportal.userservice.util.UserMapper.toDto;
 
 @RestController
@@ -38,7 +44,7 @@ public class UserController {
     @GetMapping
     public ResponseEntity<List<UserResponse>> getAllUsers() {
         var users = userService.getAllUsers();
-        return ResponseEntity.ok(users.stream().map(UserMapper::toDto).collect(Collectors.toList()));
+        return ResponseEntity.ok(users.stream().map(UserMapper::toDto).toList());
     }
 
     @PatchMapping("/{userId}/suspend")

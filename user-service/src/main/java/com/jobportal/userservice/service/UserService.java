@@ -7,7 +7,7 @@ import java.util.List;
 
 public interface UserService {
     User getUserByEmail(String email);
-    User getUserById(long id);
+    User getUserById(Long id);
     List<User> getAllUsers();
     UserResponse updateUserProfile(String email, UpdateUserRequest request);
 
