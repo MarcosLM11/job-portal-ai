@@ -71,7 +71,7 @@ public class UserServiceImpl implements UserService {
     public UserResponse deleteUser(Long id) {
         var user = userRepository.findById(id).orElseThrow(UserNotExistsException::new);
         user.setStatus(UserStatus.DELETED);
-        userRepository.delete(user);
+        user.setDeletedAt(Instant.now());
         return toDto(user);
     }
 }
