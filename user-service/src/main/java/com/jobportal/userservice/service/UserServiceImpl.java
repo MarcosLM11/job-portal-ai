@@ -7,12 +7,14 @@ import com.jobportal.userservice.dto.UserResponse;
 import com.jobportal.userservice.exception.UserNotExistsException;
 import com.jobportal.userservice.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.time.Instant;
 import java.util.List;
 import static com.jobportal.userservice.util.UserMapper.toDto;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
@@ -44,7 +46,7 @@ public class UserServiceImpl implements UserService {
         if (request.fullName() != null) user.setFullName(request.fullName());
         if (request.phone() != null) user.setPhone(request.phone());
         if (request.profileImage() != null) user.setProfileImage(request.profileImage());
-
+        log.info("Profile updated for user email={}", email);
         return toDto(user);
     }
 
@@ -54,6 +56,7 @@ public class UserServiceImpl implements UserService {
         var user = userRepository.findById(id).orElseThrow(UserNotExistsException::new);
         user.setStatus(UserStatus.SUSPENDED);
         user.setSuspendedAt(Instant.now());
+        log.info("User {} suspended", user.getId());
         return toDto(user);
     }
 
@@ -63,6 +66,7 @@ public class UserServiceImpl implements UserService {
         var user = userRepository.findById(id).orElseThrow(UserNotExistsException::new);
         user.setStatus(UserStatus.ACTIVE);
         user.setSuspendedAt(null);
+        log.info("User {} activated", user.getId());
         return toDto(user);
     }
 
@@ -72,6 +76,7 @@ public class UserServiceImpl implements UserService {
         var user = userRepository.findById(id).orElseThrow(UserNotExistsException::new);
         user.setStatus(UserStatus.DELETED);
         user.setDeletedAt(Instant.now());
+        log.info("User {} soft-deleted", user.getId());
         return toDto(user);
     }
 }

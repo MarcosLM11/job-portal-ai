@@ -7,10 +7,10 @@ import com.jobportal.userservice.util.UserMapper;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -30,7 +30,7 @@ public class UserController {
         return ResponseEntity.ok(toDto(user));
     }
 
-    @PostMapping("/me")
+    @PatchMapping("/me")
     public ResponseEntity<UserResponse> updateUserProfile(@RequestHeader("X-User-Email") String email, @RequestBody @Valid UpdateUserRequest request) {
         return ResponseEntity.ok(userService.updateUserProfile(email, request));
     }
@@ -57,7 +57,7 @@ public class UserController {
         return ResponseEntity.ok(userService.activateUser(userId));
     }
 
-    @PatchMapping("/{userId}/delete")
+    @DeleteMapping("/{userId}")
     public ResponseEntity<UserResponse> deleteUser(@PathVariable Long userId) {
         return ResponseEntity.ok(userService.deleteUser(userId));
     }

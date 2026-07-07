@@ -16,25 +16,25 @@ public class ControllerAdvice {
 
     @ExceptionHandler(EmailAlreadyExistsException.class)
     ProblemDetail handleEmailAlreadyExists(EmailAlreadyExistsException ex) {
-        log.error("Email Already Exists", ex);
+        log.warn("Email Already Exists", ex);
         return ProblemDetail.forStatusAndDetail(HttpStatus.CONFLICT, ex.getMessage());
     }
 
     @ExceptionHandler(AdminRoleNotAllowedException.class)
     ProblemDetail handleAdminRoleNotAllowed(AdminRoleNotAllowedException ex) {
-        log.error("Admin Role Not Allowed", ex);
+        log.warn("Admin Role Not Allowed", ex);
         return ProblemDetail.forStatusAndDetail(HttpStatus.FORBIDDEN, ex.getMessage());
     }
 
     @ExceptionHandler(InvalidPasswordException.class)
     ProblemDetail handleInvalidPassword(InvalidPasswordException ex) {
-        log.error("Invalid Password", ex);
+        log.warn("Invalid Password", ex);
         return ProblemDetail.forStatusAndDetail(HttpStatus.UNAUTHORIZED, ex.getMessage());
     }
 
     @ExceptionHandler(UserNotExistsException.class)
     ProblemDetail handleUserNotExists(UserNotExistsException ex) {
-        log.error("User Not Exists", ex);
+        log.warn("User Not Exists", ex);
         return ProblemDetail.forStatusAndDetail(HttpStatus.NOT_FOUND, ex.getMessage());
     }
 }

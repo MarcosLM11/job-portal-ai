@@ -15,7 +15,6 @@ public record UserResponse(
         String profileImage,
         UserRole role,
         UserStatus status,
-        Boolean verified,
         Instant lastLogin,
         Instant createdAt
 ) {

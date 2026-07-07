@@ -50,7 +50,7 @@ public class AuthServiceImpl implements AuthService {
                 .build();
 
         var savedUser = userRepository.save(user);
-        log.info("User signed up successfully: {}", savedUser.getId());
+        log.info("User signed up: id={}, email={}, role={}", savedUser.getId(), savedUser.getEmail(), savedUser.getRole());
 
         var authentication = new UsernamePasswordAuthenticationToken(user.getEmail(),user.getPassword());
         SecurityContextHolder.getContext().setAuthentication(authentication);
@@ -70,6 +70,7 @@ public class AuthServiceImpl implements AuthService {
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
         var user = userRepository.findByEmail(request.email()).orElseThrow(UserNotExistsException::new);
+        log.info("User logged in: id={}, email={}, role={}", user.getId(), user.getEmail(), user.getRole());
         var jwt = jwtProvider.generateToken(authentication, user.getId());
         user.setLastLogin(Instant.now());
         userRepository.save(user);
