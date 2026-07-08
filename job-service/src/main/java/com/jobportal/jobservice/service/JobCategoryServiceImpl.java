@@ -43,19 +43,6 @@ public class JobCategoryServiceImpl implements JobCategoryService {
         return toDto(savedCategory, true);
     }
 
-    private String generateUniqueSlug(String name) {
-        var base = name.toLowerCase()
-                .replaceAll("[^a-z0-9\\s-]", "")
-                .trim()
-                .replaceAll("[\\s-]+", "-");
-
-        if(!jobCategoryRepository.existsBySlug(base)) return base;
-
-        var counter = 1;
-        while (jobCategoryRepository.existsBySlug(base+"-"+counter)) counter++;
-        return base+"-"+counter;
-    }
-
     @Override
     public List<JobCategoryResponse> getAllCategories() {
         return jobCategoryRepository.findByActiveTrue().stream()
@@ -102,5 +89,18 @@ public class JobCategoryServiceImpl implements JobCategoryService {
     @Override
     public JobCategory getCategoryEntityById(Long id) {
         return jobCategoryRepository.findById(id).orElseThrow(() -> new JobCategoryNotFoundException("Category not found"));
+    }
+
+    private String generateUniqueSlug(String name) {
+        var base = name.toLowerCase()
+                .replaceAll("[^a-z0-9\\s-]", "")
+                .trim()
+                .replaceAll("[\\s-]+", "-");
+
+        if(!jobCategoryRepository.existsBySlug(base)) return base;
+
+        var counter = 1;
+        while (jobCategoryRepository.existsBySlug(base+"-"+counter)) counter++;
+        return base+"-"+counter;
     }
 }

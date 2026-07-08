@@ -6,6 +6,9 @@ import com.jobportal.jobservice.exception.WrongEmployerException;
 import com.jobportal.jobservice.exception.JobCategoryAlreadyExistsException;
 import com.jobportal.jobservice.exception.JobCategoryNotFoundException;
 import com.jobportal.jobservice.exception.JobCategoryParentException;
+import com.jobportal.jobservice.exception.JobSkillNotFoundException;
+import com.jobportal.jobservice.exception.JobSkillExistsException;
+import com.jobportal.jobservice.exception.JobSkillAlreadyExistsException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
@@ -50,5 +53,23 @@ public class ControllerAdvice {
     ProblemDetail handleJobCategoryParent(JobCategoryParentException ex) {
         log.warn("Job Category Parent Error", ex);
         return ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, ex.getMessage());
+    }
+
+    @ExceptionHandler(JobSkillNotFoundException.class)
+    ProblemDetail handleJobSkillNotFound(JobSkillNotFoundException ex) {
+        log.warn("Job Skill Not Found", ex);
+        return ProblemDetail.forStatusAndDetail(HttpStatus.NOT_FOUND, ex.getMessage());
+    }
+
+    @ExceptionHandler(JobSkillExistsException.class)
+    ProblemDetail handleJobSkillExists(JobSkillExistsException ex) {
+        log.warn("Job Skill Exists", ex);
+        return ProblemDetail.forStatusAndDetail(HttpStatus.CONFLICT, ex.getMessage());
+    }
+
+    @ExceptionHandler(JobSkillAlreadyExistsException.class)
+    ProblemDetail handleJobSkillAlreadyExists(JobSkillAlreadyExistsException ex) {
+        log.warn("Job Skill Already Exists", ex);
+        return ProblemDetail.forStatusAndDetail(HttpStatus.CONFLICT, ex.getMessage());
     }
 }
