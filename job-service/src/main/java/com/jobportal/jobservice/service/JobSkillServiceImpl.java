@@ -8,22 +8,24 @@ import com.jobportal.jobservice.exception.JobSkillNotFoundException;
 import com.jobportal.jobservice.repository.JobSkillRepository;
 import com.jobportal.jobservice.util.JobSkillMapper;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-
+import org.springframework.transaction.annotation.Transactional;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 import static com.jobportal.jobservice.util.JobSkillMapper.toDto;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class JobSkillServiceImpl implements JobSkillService {
     private final JobSkillRepository jobSkillRepository;
 
     @Override
     public JobSkillResponse createSkill(JobSkillRequest request) {
-        if (jobSkillRepository.existsByName(request.name())) throw new JobSkillAlreadyExistsException();
+        if (Boolean.TRUE.equals(jobSkillRepository.existsByName(request.name()))) throw new JobSkillAlreadyExistsException();
 
         var slug = generateUniqueSlug(request.name());
         var jobSkill = JobSkill.builder()
@@ -32,6 +34,7 @@ public class JobSkillServiceImpl implements JobSkillService {
                 .category(request.category())
                 .build();
         var savedJobSkill = jobSkillRepository.save(jobSkill);
+        log.info("Skill created: id={}, name={}", savedJobSkill.getId(), savedJobSkill.getName());
         return toDto(savedJobSkill);
     }
 
@@ -54,11 +57,13 @@ public class JobSkillServiceImpl implements JobSkillService {
     public JobSkillResponse updateSkill(Long id, JobSkillRequest request) {
         var jobSkill = jobSkillRepository.findById(id).orElseThrow(() -> new JobSkillNotFoundException(id));
 
-        if (!jobSkill.getName().equals(request.name()) && jobSkillRepository.existsByName(request.name())) throw new JobSkillAlreadyExistsException();
+        if (!jobSkill.getName().equals(request.name()) && Boolean.TRUE.equals(jobSkillRepository.existsByName(request.name()))) throw new JobSkillAlreadyExistsException();
 
         jobSkill.setName(request.name());
         jobSkill.setCategory(request.category());
-        return toDto(jobSkillRepository.save(jobSkill));
+        var updatedSkill = jobSkillRepository.save(jobSkill);
+        log.info("Skill updated: id={}", id);
+        return toDto(updatedSkill);
     }
 
     @Override
@@ -66,6 +71,7 @@ public class JobSkillServiceImpl implements JobSkillService {
         var jobSkill = jobSkillRepository.findById(id).orElseThrow(() -> new JobSkillNotFoundException(id));
         jobSkill.setActive(false);
         jobSkillRepository.save(jobSkill);
+        log.info("Skill deactivated: id={}", id);
     }
 
     @Override
@@ -79,10 +85,10 @@ public class JobSkillServiceImpl implements JobSkillService {
                 .trim()
                 .replaceAll("[\\s-]+", "-");
 
-        if(!jobSkillRepository.existsBySlug(base)) return base;
+        if(Boolean.FALSE.equals(jobSkillRepository.existsBySlug(base))) return base;
 
         var counter = 1;
-        while (jobSkillRepository.existsBySlug(base+"-"+counter)) counter++;
+        while (Boolean.TRUE.equals(jobSkillRepository.existsBySlug(base+"-"+counter))) counter++;
         return base+"-"+counter;
     }
 }

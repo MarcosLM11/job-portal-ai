@@ -34,6 +34,10 @@ build/
 ##Compile
 target/
 
+## Logs
+logs/
+*.log
+
 ## CLAUDE
 .claude/
 .claude-plugin/

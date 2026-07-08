@@ -8,12 +8,13 @@ import com.jobportal.jobservice.exception.JobCategoryNotFoundException;
 import com.jobportal.jobservice.exception.JobCategoryParentException;
 import com.jobportal.jobservice.repository.JobCategoryRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
-
 import static com.jobportal.jobservice.util.JobCategoryMapper.toDto;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 @Transactional
@@ -22,7 +23,7 @@ public class JobCategoryServiceImpl implements JobCategoryService {
 
     @Override
     public JobCategoryResponse createCategory(JobCategoryRequest request) {
-        if (jobCategoryRepository.existsByName(request.name())) throw new JobCategoryAlreadyExistsException("Category name already exists, choose a different name");
+        if (Boolean.TRUE.equals(jobCategoryRepository.existsByName(request.name()))) throw new JobCategoryAlreadyExistsException("Category name already exists, choose a different name");
 
         JobCategory parent = null;
 
@@ -41,6 +42,7 @@ public class JobCategoryServiceImpl implements JobCategoryService {
                 .build();
 
         var savedCategory = jobCategoryRepository.save(category);
+        log.info("Category created: id={}, name={}", savedCategory.getId(), savedCategory.getName());
 
         return toDto(savedCategory, true);
     }
@@ -61,7 +63,7 @@ public class JobCategoryServiceImpl implements JobCategoryService {
     @Override
     public JobCategoryResponse updateCategory(Long id, JobCategoryRequest request) {
         var category = getCategoryEntityById(id);
-        if (!category.getName().equals(request.name()) && jobCategoryRepository.existsByName(request.name())) {
+        if (!category.getName().equals(request.name()) && Boolean.TRUE.equals(jobCategoryRepository.existsByName(request.name()))) {
             throw new JobCategoryAlreadyExistsException("Category name already exists, choose a different name");
         }
 
@@ -78,6 +80,7 @@ public class JobCategoryServiceImpl implements JobCategoryService {
         category.setIconUrl(request.iconUrl());
         category.setParent(parent);
         var updatedCategory = jobCategoryRepository.save(category);
+        log.info("Category updated: id={}", id);
         return toDto(updatedCategory, true);
     }
 
@@ -86,6 +89,7 @@ public class JobCategoryServiceImpl implements JobCategoryService {
         var category = getCategoryEntityById(id);
         category.setActive(false);
         jobCategoryRepository.save(category);
+        log.info("Category deactivated: id={}", id);
     }
 
     @Override
@@ -99,10 +103,10 @@ public class JobCategoryServiceImpl implements JobCategoryService {
                 .trim()
                 .replaceAll("[\\s-]+", "-");
 
-        if(!jobCategoryRepository.existsBySlug(base)) return base;
+        if(Boolean.FALSE.equals(jobCategoryRepository.existsBySlug(base))) return base;
 
         var counter = 1;
-        while (jobCategoryRepository.existsBySlug(base+"-"+counter)) counter++;
+        while (Boolean.TRUE.equals(jobCategoryRepository.existsBySlug(base+"-"+counter))) counter++;
         return base+"-"+counter;
     }
 }

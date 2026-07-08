@@ -10,15 +10,16 @@ import com.jobportal.jobservice.exception.JobNotFoundException;
 import com.jobportal.jobservice.exception.WrongEmployerException;
 import com.jobportal.jobservice.repository.*;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import static com.jobportal.jobservice.util.JobMapper.toDto;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 @Transactional
@@ -56,6 +57,7 @@ public class JobServiceImpl implements JobService {
                 .jobStatus(JobStatus.DRAFT)
                 .build();
         var savedJob = jobRepository.save(job);
+        log.info("Job created: jobId={}, employerId={}, companyId={}", savedJob.getId(), employerId, req.companyId());
         return convertToResponse(savedJob);
     }
 
@@ -105,7 +107,9 @@ public class JobServiceImpl implements JobService {
         job.setOpenings(req.openings() != null ? req.openings() : job.getOpenings());
         job.setApplicationDeadline(req.applicationDeadLine());
         job.setExpiresAt(req.expiresAt());
-        return convertToResponse(jobRepository.save(job));
+        var updatedJob = jobRepository.save(job);
+        log.info("Job updated: jobId={}, employerId={}", jobId, employerId);
+        return convertToResponse(updatedJob);
     }
 
     @Override
@@ -118,7 +122,9 @@ public class JobServiceImpl implements JobService {
         job.setJobStatus(JobStatus.OPEN);
         job.setPublishedAt(LocalDateTime.now(ZoneId.systemDefault()));
         job.setActive(true);
-        return convertToResponse(jobRepository.save(job));
+        var publishedJob = jobRepository.save(job);
+        log.info("Job published: jobId={}, employerId={}", jobId, employerId);
+        return convertToResponse(publishedJob);
     }
 
     @Override
@@ -129,7 +135,9 @@ public class JobServiceImpl implements JobService {
         job.setJobStatus(JobStatus.CLOSED);
         job.setClosedAt(LocalDateTime.now(ZoneId.systemDefault()));
         job.setActive(false);
-        return convertToResponse(jobRepository.save(job));
+        var closedJob = jobRepository.save(job);
+        log.info("Job closed: jobId={}, employerId={}", jobId, employerId);
+        return convertToResponse(closedJob);
     }
 
     @Override
@@ -137,6 +145,7 @@ public class JobServiceImpl implements JobService {
         var job = jobRepository.findById(jobId).orElseThrow(JobNotFoundException::new);
         assertEmployer(job, employerId);
         jobRepository.delete(job);
+        log.info("Job deleted: jobId={}, employerId={}", jobId, employerId);
     }
 
     @Override
