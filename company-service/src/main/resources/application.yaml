@@ -5,9 +5,15 @@ spring:
   application:
     name: company-service
     description: Company Service
+  threads:
+    virtual:
+      enabled: true
   jpa:
     hibernate:
       ddl-auto: update
+    properties:
+      hibernate:
+        default_batch_fetch_size: 20
     show-sql: false
     open-in-view: false
   datasource:
@@ -15,6 +21,16 @@ spring:
     username: postgres
     password: postgresPassword
     driver-class-name: org.postgresql.Driver
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics
+  endpoint:
+    health:
+      probes:
+        enabled: true
 
 logging:
   structured:

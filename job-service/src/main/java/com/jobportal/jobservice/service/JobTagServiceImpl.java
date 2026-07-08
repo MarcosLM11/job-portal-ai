@@ -73,7 +73,6 @@ public class JobTagServiceImpl implements JobTagService {
     }
 
     @Override
-    @Transactional(readOnly = true)
     public JobTag getTagEntityById(Long id) {
         return jobTagRepository.findById(id).orElseThrow(() -> new JobTagNotFoundException("Job Tag not found with id: " + id));
     }

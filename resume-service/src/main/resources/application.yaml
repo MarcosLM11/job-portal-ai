@@ -1,10 +1,18 @@
 server:
-  port: 8081
+  port: 8084
 
 spring:
   application:
-    name: user-service
-    description: user-service - auth, profile, and user management
+    name: resume-service
+    description: Resume Service
+  threads:
+    virtual:
+      enabled: true
+  datasource:
+    url: jdbc:postgresql://localhost:5432/job-portal-db
+    username: postgres
+    password: postgresPassword
+    driver-class-name: org.postgresql.Driver
   jpa:
     hibernate:
       ddl-auto: update
@@ -13,14 +21,6 @@ spring:
         default_batch_fetch_size: 20
     show-sql: false
     open-in-view: false
-  datasource:
-    url: jdbc:postgresql://localhost:5432/job-portal-db
-    username: postgres
-    password: postgresPassword
-    driver-class-name: org.postgresql.Driver
-  threads:
-    virtual:
-      enabled: true
 
 management:
   endpoints:
@@ -37,5 +37,4 @@ logging:
     format:
       file: logstash
   file:
-    name: logs/user-service.log
-
+    name: logs/resume-service.log
