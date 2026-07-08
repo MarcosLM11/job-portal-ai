@@ -1,22 +1,28 @@
 package com.jobportal.jobservice.service;
 
+import com.jobportal.jobservice.client.CompanyClient;
 import com.jobportal.jobservice.domain.*;
 import com.jobportal.jobservice.dto.JobRequest;
 import com.jobportal.jobservice.dto.JobResponse;
 import com.jobportal.jobservice.dto.JobSearchRequest;
+import com.jobportal.jobservice.dto.JobUpdateRequest;
 import com.jobportal.jobservice.dto.company.CompanyResponse;
+import com.jobportal.jobservice.exception.JobCompanyMismatchException;
 import com.jobportal.jobservice.exception.JobExpiredException;
 import com.jobportal.jobservice.exception.JobNotFoundException;
 import com.jobportal.jobservice.exception.WrongEmployerException;
 import com.jobportal.jobservice.repository.*;
+import feign.FeignException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.HashSet;
-import java.util.List;
 import static com.jobportal.jobservice.util.JobMapper.toDto;
 
 @Slf4j
@@ -28,6 +34,7 @@ public class JobServiceImpl implements JobService {
     private final JobCategoryService jobCategoryService;
     private final JobTagService jobTagService;
     private final JobSkillService  jobSkillService;
+    private final CompanyClient companyClient;
 
     @Override
     public JobResponse createJob(Long employerId, JobRequest req) {
@@ -46,8 +53,8 @@ public class JobServiceImpl implements JobService {
                 .jobCategory(category)
                 .skills(skills)
                 .tags(tags)
-                .location(buildLocation(req))
-                .salaryRange(buildSalaryRange(req))
+                .location(buildLocation(req.address(), req.city(), req.state(), req.country(), req.zipCode()))
+                .salaryRange(buildSalaryRange(req.minSalary(), req.maxSalary()))
                 .jobType(req.jobType())
                 .workMode(req.workMode())
                 .experienceLevel(req.experienceLevel())
@@ -63,29 +70,33 @@ public class JobServiceImpl implements JobService {
 
     @Override
     @Transactional(readOnly = true)
-    public JobResponse getJobById(Long id) {
+    public JobResponse getJobById(Long id, Long requesterId) {
         var job = jobRepository.findById(id).orElseThrow(JobNotFoundException::new);
+        if (job.getJobStatus() == JobStatus.DRAFT && (requesterId == null || !job.getEmployerId().equals(requesterId))) {
+            throw new JobNotFoundException(id);
+        }
         return convertToResponse(job);
     }
 
     @Override
     @Transactional(readOnly = true)
-    public List<JobResponse> getJobs(JobSearchRequest request) {
-        var jobs = jobRepository.findAll(JobSpecification.build(request));
-        return jobs.stream().map(this::convertToResponse).toList();
+    public Page<JobResponse> getJobs(JobSearchRequest request, Pageable pageable) {
+        return jobRepository.findAll(JobSpecification.build(request), pageable).map(this::convertToResponse);
     }
 
     @Override
     @Transactional(readOnly = true)
-    public List<JobResponse> getJobsByCompany(Long companyId) {
-        var jobs = jobRepository.findByCompanyId(companyId);
-        return jobs.stream().map(this::convertToResponse).toList();
+    public Page<JobResponse> getJobsByCompany(Long companyId, Pageable pageable) {
+        return jobRepository.findByCompanyId(companyId, pageable).map(this::convertToResponse);
     }
 
     @Override
-    public JobResponse updateJob(Long jobId, Long employerId, JobRequest req) {
+    public JobResponse updateJob(Long jobId, Long employerId, JobUpdateRequest req) {
         var job = jobRepository.findById(jobId).orElseThrow(JobNotFoundException::new);
         assertEmployer(job, employerId);
+        if (req.companyId() != null && !req.companyId().equals(job.getCompanyId())) {
+            throw new JobCompanyMismatchException();
+        }
 
         var category = jobCategoryService.getCategoryEntityById(req.categoryId());
         var skills = req.skillIds() != null ? jobSkillService.getSkillsByIds(req.skillIds()) : new HashSet<JobSkill>();
@@ -99,8 +110,8 @@ public class JobServiceImpl implements JobService {
         job.setJobCategory(category);
         job.setSkills(skills);
         job.setTags(tags);
-        job.setLocation(buildLocation(req));
-        job.setSalaryRange(buildSalaryRange(req));
+        job.setLocation(buildLocation(req.address(), req.city(), req.state(), req.country(), req.zipCode()));
+        job.setSalaryRange(buildSalaryRange(req.minSalary(), req.maxSalary()));
         job.setJobType(req.jobType());
         job.setWorkMode(req.workMode());
         job.setExperienceLevel(req.experienceLevel());
@@ -150,31 +161,38 @@ public class JobServiceImpl implements JobService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<JobResponse> getAllJobsAdmin() {
-        return jobRepository.findAll().stream().map(this::convertToResponse).toList();
+    public Page<JobResponse> getAllJobsAdmin(Pageable pageable) {
+        return jobRepository.findAll(pageable).map(this::convertToResponse);
     }
 
     private JobResponse convertToResponse(Job savedJob) {
-        var companyResponse = CompanyResponse.builder()
-                .id(savedJob.getCompanyId())
-                .build();
+        var companyResponse = fetchCompany(savedJob.getCompanyId());
         return toDto(savedJob, companyResponse);
     }
 
-    private SalaryRange buildSalaryRange(JobRequest req) {
+    private CompanyResponse fetchCompany(Long companyId) {
+        try {
+            return companyClient.getCompanyById(companyId);
+        } catch (FeignException ex) {
+            log.warn("Failed to fetch company {} from company-service, falling back to id-only response: {}", companyId, ex.getMessage());
+            return CompanyResponse.builder().id(companyId).build();
+        }
+    }
+
+    private SalaryRange buildSalaryRange(BigDecimal minSalary, BigDecimal maxSalary) {
         return SalaryRange.builder()
-                .minSalary(req.minSalary())
-                .maxSalary(req.maxSalary())
+                .minSalary(minSalary)
+                .maxSalary(maxSalary)
                 .build();
     }
 
-    private JobLocation buildLocation(JobRequest req) {
+    private JobLocation buildLocation(String address, String city, String state, String country, String zipCode) {
         return JobLocation.builder()
-                .address(req.address())
-                .city(req.city())
-                .state(req.state())
-                .country(req.country())
-                .zipCode(req.zipCode())
+                .address(address)
+                .city(city)
+                .state(state)
+                .country(country)
+                .zipCode(zipCode)
                 .build();
     }
 

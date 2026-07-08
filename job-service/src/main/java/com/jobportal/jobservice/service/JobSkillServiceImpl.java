@@ -7,12 +7,14 @@ import com.jobportal.jobservice.exception.JobSkillAlreadyExistsException;
 import com.jobportal.jobservice.exception.JobSkillNotFoundException;
 import com.jobportal.jobservice.repository.JobSkillRepository;
 import com.jobportal.jobservice.util.JobSkillMapper;
+import com.jobportal.jobservice.util.SlugGenerator;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 import static com.jobportal.jobservice.util.JobSkillMapper.toDto;
 
@@ -27,7 +29,7 @@ public class JobSkillServiceImpl implements JobSkillService {
     public JobSkillResponse createSkill(JobSkillRequest request) {
         if (Boolean.TRUE.equals(jobSkillRepository.existsByName(request.name()))) throw new JobSkillAlreadyExistsException();
 
-        var slug = generateUniqueSlug(request.name());
+        var slug = SlugGenerator.generateUniqueSlug(request.name(), jobSkillRepository::existsBySlug);
         var jobSkill = JobSkill.builder()
                 .name(request.name())
                 .slug(slug)
@@ -39,13 +41,13 @@ public class JobSkillServiceImpl implements JobSkillService {
     }
 
     @Override
-    public List<JobSkillResponse> getAllSkills() {
-        return jobSkillRepository.findByActiveTrue().stream()
-                .map(JobSkillMapper::toDto)
-                .toList();
+    @Transactional(readOnly = true)
+    public Page<JobSkillResponse> getAllSkills(Pageable pageable) {
+        return jobSkillRepository.findByActiveTrue(pageable).map(JobSkillMapper::toDto);
     }
 
     @Override
+    @Transactional(readOnly = true)
     public JobSkillResponse getSkillById(Long id) {
         return jobSkillRepository.findById(id)
                 .filter(JobSkill::getActive)
@@ -67,7 +69,7 @@ public class JobSkillServiceImpl implements JobSkillService {
     }
 
     @Override
-    public void deleteSkillById(Long id) {
+    public void deleteSkill(Long id) {
         var jobSkill = jobSkillRepository.findById(id).orElseThrow(() -> new JobSkillNotFoundException(id));
         jobSkill.setActive(false);
         jobSkillRepository.save(jobSkill);
@@ -77,18 +79,5 @@ public class JobSkillServiceImpl implements JobSkillService {
     @Override
     public Set<JobSkill> getSkillsByIds(Set<Long> ids) {
         return new HashSet<>(jobSkillRepository.findAllById(ids));
-    }
-
-    private String generateUniqueSlug(String name) {
-        var base = name.toLowerCase()
-                .replaceAll("[^a-z0-9\\s-]", "")
-                .trim()
-                .replaceAll("[\\s-]+", "-");
-
-        if(Boolean.FALSE.equals(jobSkillRepository.existsBySlug(base))) return base;
-
-        var counter = 1;
-        while (Boolean.TRUE.equals(jobSkillRepository.existsBySlug(base+"-"+counter))) counter++;
-        return base+"-"+counter;
     }
 }

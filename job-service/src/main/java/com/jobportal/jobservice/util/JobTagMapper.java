@@ -10,6 +10,7 @@ public class JobTagMapper {
                 .id(jobTag.getId())
                 .name(jobTag.getName())
                 .slug(jobTag.getSlug())
+                .active(jobTag.getActive())
                 .build();
     }
 }

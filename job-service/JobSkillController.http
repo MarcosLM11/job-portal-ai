@@ -1,8 +1,8 @@
 ### Job Skill Controller Tests
-### Base URL: http://localhost:8083/api/job-skills
+### Base URL: http://localhost:8083/api/v1/job-skills
 
 ### 1. Create a new Job Skill - Java
-POST http://localhost:8083/api/job-skills
+POST http://localhost:8083/api/v1/job-skills
 Content-Type: application/json
 
 {
@@ -11,7 +11,7 @@ Content-Type: application/json
 }
 
 ### 2. Create Job Skill - Spring Boot
-POST http://localhost:8083/api/job-skills
+POST http://localhost:8083/api/v1/job-skills
 Content-Type: application/json
 
 {
@@ -20,7 +20,7 @@ Content-Type: application/json
 }
 
 ### 3. Create Job Skill - PostgreSQL
-POST http://localhost:8083/api/job-skills
+POST http://localhost:8083/api/v1/job-skills
 Content-Type: application/json
 
 {
@@ -29,7 +29,7 @@ Content-Type: application/json
 }
 
 ### 4. Create Job Skill - AWS
-POST http://localhost:8083/api/job-skills
+POST http://localhost:8083/api/v1/job-skills
 Content-Type: application/json
 
 {
@@ -38,7 +38,7 @@ Content-Type: application/json
 }
 
 ### 5. Create Job Skill - Docker
-POST http://localhost:8083/api/job-skills
+POST http://localhost:8083/api/v1/job-skills
 Content-Type: application/json
 
 {
@@ -47,7 +47,7 @@ Content-Type: application/json
 }
 
 ### 6. Create Job Skill - Python
-POST http://localhost:8083/api/job-skills
+POST http://localhost:8083/api/v1/job-skills
 Content-Type: application/json
 
 {
@@ -56,25 +56,25 @@ Content-Type: application/json
 }
 
 ### 7. Get all Job Skills
-GET http://localhost:8083/api/job-skills
+GET http://localhost:8083/api/v1/job-skills
 
 ### 8. Get Job Skill by ID (1)
-GET http://localhost:8083/api/job-skills/1
+GET http://localhost:8083/api/v1/job-skills/1
 
 ### 9. Get Job Skill by ID (2)
-GET http://localhost:8083/api/job-skills/2
+GET http://localhost:8083/api/v1/job-skills/2
 
 ### 10. Get Job Skill by ID (3)
-GET http://localhost:8083/api/job-skills/3
+GET http://localhost:8083/api/v1/job-skills/3
 
 ### 11. Get Job Skill by ID (4)
-GET http://localhost:8083/api/job-skills/4
+GET http://localhost:8083/api/v1/job-skills/4
 
 ### 12. Get Job Skill by ID (5)
-GET http://localhost:8083/api/job-skills/5
+GET http://localhost:8083/api/v1/job-skills/5
 
 ### 13. Update Job Skill (1) - Java to Java Enterprise
-PUT http://localhost:8083/api/job-skills/1
+PUT http://localhost:8083/api/v1/job-skills/1
 Content-Type: application/json
 
 {
@@ -83,7 +83,7 @@ Content-Type: application/json
 }
 
 ### 14. Update Job Skill (2) - Spring Boot to Spring Boot 3
-PUT http://localhost:8083/api/job-skills/2
+PUT http://localhost:8083/api/v1/job-skills/2
 Content-Type: application/json
 
 {
@@ -92,7 +92,7 @@ Content-Type: application/json
 }
 
 ### 15. Update Job Skill (3) - PostgreSQL to PostgreSQL Advanced
-PUT http://localhost:8083/api/job-skills/3
+PUT http://localhost:8083/api/v1/job-skills/3
 Content-Type: application/json
 
 {
@@ -101,16 +101,16 @@ Content-Type: application/json
 }
 
 ### 16. Delete Job Skill (6)
-DELETE http://localhost:8083/api/job-skills/6
+DELETE http://localhost:8083/api/v1/job-skills/6
 
 ### 17. Get all Job Skills after deletion
-GET http://localhost:8083/api/job-skills
+GET http://localhost:8083/api/v1/job-skills
 
 ### 18. Try to get deleted skill (should fail)
-GET http://localhost:8083/api/job-skills/6
+GET http://localhost:8083/api/v1/job-skills/6
 
 ### 19. Try to create duplicate skill (should fail)
-POST http://localhost:8083/api/job-skills
+POST http://localhost:8083/api/v1/job-skills
 Content-Type: application/json
 
 {
@@ -119,7 +119,7 @@ Content-Type: application/json
 }
 
 ### 20. Try to update to duplicate name (should fail)
-PUT http://localhost:8083/api/job-skills/4
+PUT http://localhost:8083/api/v1/job-skills/4
 Content-Type: application/json
 
 {
@@ -128,7 +128,7 @@ Content-Type: application/json
 }
 
 ### 21. Try to create skill without name (should fail)
-POST http://localhost:8083/api/job-skills
+POST http://localhost:8083/api/v1/job-skills
 Content-Type: application/json
 
 {
@@ -137,7 +137,7 @@ Content-Type: application/json
 }
 
 ### 22. Try to create skill without category (should fail)
-POST http://localhost:8083/api/job-skills
+POST http://localhost:8083/api/v1/job-skills
 Content-Type: application/json
 
 {
@@ -145,4 +145,4 @@ Content-Type: application/json
 }
 
 ### 23. Try to get non-existent skill (should fail)
-GET http://localhost:8083/api/job-skills/999
+GET http://localhost:8083/api/v1/job-skills/999

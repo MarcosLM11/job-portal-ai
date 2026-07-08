@@ -1,8 +1,8 @@
 ### Job Tag Controller Tests
-### Base URL: http://localhost:8083/api/job-tags
+### Base URL: http://localhost:8083/api/v1/job-tags
 
 ### 1. Create a new Job Tag - Remote
-POST http://localhost:8083/api/job-tags
+POST http://localhost:8083/api/v1/job-tags
 Content-Type: application/json
 
 {
@@ -10,7 +10,7 @@ Content-Type: application/json
 }
 
 ### 2. Create Job Tag - Urgent
-POST http://localhost:8083/api/job-tags
+POST http://localhost:8083/api/v1/job-tags
 Content-Type: application/json
 
 {
@@ -18,7 +18,7 @@ Content-Type: application/json
 }
 
 ### 3. Create Job Tag - Startup
-POST http://localhost:8083/api/job-tags
+POST http://localhost:8083/api/v1/job-tags
 Content-Type: application/json
 
 {
@@ -26,7 +26,7 @@ Content-Type: application/json
 }
 
 ### 4. Create Job Tag - Fortune500
-POST http://localhost:8083/api/job-tags
+POST http://localhost:8083/api/v1/job-tags
 Content-Type: application/json
 
 {
@@ -34,7 +34,7 @@ Content-Type: application/json
 }
 
 ### 5. Create Job Tag - Benefits
-POST http://localhost:8083/api/job-tags
+POST http://localhost:8083/api/v1/job-tags
 Content-Type: application/json
 
 {
@@ -42,7 +42,7 @@ Content-Type: application/json
 }
 
 ### 6. Create Job Tag - Visa Sponsorship
-POST http://localhost:8083/api/job-tags
+POST http://localhost:8083/api/v1/job-tags
 Content-Type: application/json
 
 {
@@ -50,25 +50,25 @@ Content-Type: application/json
 }
 
 ### 7. Get all Job Tags
-GET http://localhost:8083/api/job-tags
+GET http://localhost:8083/api/v1/job-tags
 
 ### 8. Get Job Tag by ID (1)
-GET http://localhost:8083/api/job-tags/1
+GET http://localhost:8083/api/v1/job-tags/1
 
 ### 9. Get Job Tag by ID (2)
-GET http://localhost:8083/api/job-tags/2
+GET http://localhost:8083/api/v1/job-tags/2
 
 ### 10. Get Job Tag by ID (3)
-GET http://localhost:8083/api/job-tags/3
+GET http://localhost:8083/api/v1/job-tags/3
 
 ### 11. Get Job Tag by ID (4)
-GET http://localhost:8083/api/job-tags/4
+GET http://localhost:8083/api/v1/job-tags/4
 
 ### 12. Get Job Tag by ID (5)
-GET http://localhost:8083/api/job-tags/5
+GET http://localhost:8083/api/v1/job-tags/5
 
 ### 13. Update Job Tag (1) - Remote to Remote-Friendly
-PUT http://localhost:8083/api/job-tags/1
+PUT http://localhost:8083/api/v1/job-tags/1
 Content-Type: application/json
 
 {
@@ -76,7 +76,7 @@ Content-Type: application/json
 }
 
 ### 14. Update Job Tag (2) - Urgent to High Priority
-PUT http://localhost:8083/api/job-tags/2
+PUT http://localhost:8083/api/v1/job-tags/2
 Content-Type: application/json
 
 {
@@ -84,7 +84,7 @@ Content-Type: application/json
 }
 
 ### 15. Update Job Tag (3) - Startup to Early Stage Startup
-PUT http://localhost:8083/api/job-tags/3
+PUT http://localhost:8083/api/v1/job-tags/3
 Content-Type: application/json
 
 {
@@ -92,16 +92,16 @@ Content-Type: application/json
 }
 
 ### 16. Delete Job Tag (6)
-DELETE http://localhost:8083/api/job-tags/6
+DELETE http://localhost:8083/api/v1/job-tags/6
 
 ### 17. Get all Job Tags after deletion
-GET http://localhost:8083/api/job-tags
+GET http://localhost:8083/api/v1/job-tags
 
 ### 18. Try to get deleted tag (should fail)
-GET http://localhost:8083/api/job-tags/6
+GET http://localhost:8083/api/v1/job-tags/6
 
 ### 19. Try to create duplicate tag (should fail)
-POST http://localhost:8083/api/job-tags
+POST http://localhost:8083/api/v1/job-tags
 Content-Type: application/json
 
 {
@@ -109,7 +109,7 @@ Content-Type: application/json
 }
 
 ### 20. Try to update to duplicate name (should fail)
-PUT http://localhost:8083/api/job-tags/4
+PUT http://localhost:8083/api/v1/job-tags/4
 Content-Type: application/json
 
 {
@@ -117,7 +117,7 @@ Content-Type: application/json
 }
 
 ### 21. Try to create tag without name (should fail)
-POST http://localhost:8083/api/job-tags
+POST http://localhost:8083/api/v1/job-tags
 Content-Type: application/json
 
 {
@@ -125,4 +125,4 @@ Content-Type: application/json
 }
 
 ### 22. Try to get non-existent tag (should fail)
-GET http://localhost:8083/api/job-tags/999
+GET http://localhost:8083/api/v1/job-tags/999

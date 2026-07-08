@@ -6,6 +6,7 @@ import lombok.Builder;
 public record JobTagResponse(
         Long id,
         String name,
-        String slug
+        String slug,
+        Boolean active
 ) {
 }

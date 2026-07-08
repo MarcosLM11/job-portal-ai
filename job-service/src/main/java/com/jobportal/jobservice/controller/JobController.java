@@ -3,16 +3,19 @@ package com.jobportal.jobservice.controller;
 import com.jobportal.jobservice.dto.JobRequest;
 import com.jobportal.jobservice.dto.JobResponse;
 import com.jobportal.jobservice.dto.JobSearchRequest;
+import com.jobportal.jobservice.dto.JobUpdateRequest;
 import com.jobportal.jobservice.service.JobService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import java.util.List;
 
 @RestController
-@RequestMapping("/api/jobs")
+@RequestMapping("/api/v1/jobs")
 @RequiredArgsConstructor
 public class JobController {
     private final JobService jobService;
@@ -25,27 +28,27 @@ public class JobController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<JobResponse> getJobById(@PathVariable Long id) {
-        return ResponseEntity.ok(jobService.getJobById(id));
+    public ResponseEntity<JobResponse> getJobById(@PathVariable Long id, @RequestHeader(value = "X-User-Id", required = false) Long requesterId) {
+        return ResponseEntity.ok(jobService.getJobById(id, requesterId));
     }
 
     @GetMapping
-    public ResponseEntity<List<JobResponse>> getJobs(@ModelAttribute JobSearchRequest request) {
-        return ResponseEntity.ok(jobService.getJobs(request));
+    public ResponseEntity<Page<JobResponse>> getJobs(@ModelAttribute JobSearchRequest request, @PageableDefault(size = 20, sort = "createdAt") Pageable pageable) {
+        return ResponseEntity.ok(jobService.getJobs(request, pageable));
     }
 
     @GetMapping("/company/{companyId}")
-    public ResponseEntity<List<JobResponse>> getJobsByCompany(@PathVariable Long companyId) {
-        return ResponseEntity.ok(jobService.getJobsByCompany(companyId));
+    public ResponseEntity<Page<JobResponse>> getJobsByCompany(@PathVariable Long companyId, @PageableDefault(size = 20, sort = "createdAt") Pageable pageable) {
+        return ResponseEntity.ok(jobService.getJobsByCompany(companyId, pageable));
     }
 
     @GetMapping("/admin")
-    public ResponseEntity<List<JobResponse>> getAllJobsAdmin() {
-        return ResponseEntity.ok(jobService.getAllJobsAdmin());
+    public ResponseEntity<Page<JobResponse>> getAllJobsAdmin(@PageableDefault(size = 20, sort = "createdAt") Pageable pageable) {
+        return ResponseEntity.ok(jobService.getAllJobsAdmin(pageable));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<JobResponse> updateJob(@PathVariable Long id, @RequestHeader("X-User-Id") Long employerId, @RequestBody @Valid JobRequest jobRequest) {
+    public ResponseEntity<JobResponse> updateJob(@PathVariable Long id, @RequestHeader("X-User-Id") Long employerId, @RequestBody @Valid JobUpdateRequest jobRequest) {
         return ResponseEntity.ok(jobService.updateJob(id, employerId, jobRequest));
     }
 

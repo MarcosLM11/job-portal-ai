@@ -7,11 +7,13 @@ import com.jobportal.jobservice.exception.JobCategoryAlreadyExistsException;
 import com.jobportal.jobservice.exception.JobCategoryNotFoundException;
 import com.jobportal.jobservice.exception.JobCategoryParentException;
 import com.jobportal.jobservice.repository.JobCategoryRepository;
+import com.jobportal.jobservice.util.SlugGenerator;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import java.util.List;
 import static com.jobportal.jobservice.util.JobCategoryMapper.toDto;
 
 @Slf4j
@@ -31,7 +33,7 @@ public class JobCategoryServiceImpl implements JobCategoryService {
             parent = getCategoryEntityById(request.parentId());
         }
 
-        var slug = generateUniqueSlug(request.name());
+        var slug = SlugGenerator.generateUniqueSlug(request.name(), jobCategoryRepository::existsBySlug);
 
         var category = JobCategory.builder()
                 .name(request.name())
@@ -48,13 +50,13 @@ public class JobCategoryServiceImpl implements JobCategoryService {
     }
 
     @Override
-    public List<JobCategoryResponse> getAllCategories() {
-        return jobCategoryRepository.findByActiveTrue().stream()
-                .map(category -> toDto(category, false))
-                .toList();
+    @Transactional(readOnly = true)
+    public Page<JobCategoryResponse> getAllCategories(Pageable pageable) {
+        return jobCategoryRepository.findByActiveTrue(pageable).map(category -> toDto(category, false));
     }
 
     @Override
+    @Transactional(readOnly = true)
     public JobCategoryResponse getCategoryById(Long id) {
         var jobCategory = getCategoryEntityById(id);
         return toDto(jobCategory, false);
@@ -73,6 +75,7 @@ public class JobCategoryServiceImpl implements JobCategoryService {
                 throw new JobCategoryParentException("A category cannot be its own parent");
             }
             parent = getCategoryEntityById(request.parentId());
+            assertNoCycle(id, parent);
         }
 
         category.setName(request.name());
@@ -87,26 +90,31 @@ public class JobCategoryServiceImpl implements JobCategoryService {
     @Override
     public void deleteCategory(Long id) {
         var category = getCategoryEntityById(id);
-        category.setActive(false);
-        jobCategoryRepository.save(category);
+        deactivateRecursively(category);
         log.info("Category deactivated: id={}", id);
     }
 
     @Override
+    @Transactional(readOnly = true)
     public JobCategory getCategoryEntityById(Long id) {
-        return jobCategoryRepository.findById(id).orElseThrow(() -> new JobCategoryNotFoundException("Category not found"));
+        var category = jobCategoryRepository.findById(id).orElseThrow(() -> new JobCategoryNotFoundException("Category not found"));
+        if (Boolean.FALSE.equals(category.getActive())) throw new JobCategoryNotFoundException("Category not found");
+        return category;
     }
 
-    private String generateUniqueSlug(String name) {
-        var base = name.toLowerCase()
-                .replaceAll("[^a-z0-9\\s-]", "")
-                .trim()
-                .replaceAll("[\\s-]+", "-");
+    private void assertNoCycle(Long id, JobCategory proposedParent) {
+        var current = proposedParent;
+        while (current != null) {
+            if (current.getId().equals(id)) {
+                throw new JobCategoryParentException("A category cannot be an ancestor of itself");
+            }
+            current = current.getParent();
+        }
+    }
 
-        if(Boolean.FALSE.equals(jobCategoryRepository.existsBySlug(base))) return base;
-
-        var counter = 1;
-        while (Boolean.TRUE.equals(jobCategoryRepository.existsBySlug(base+"-"+counter))) counter++;
-        return base+"-"+counter;
+    private void deactivateRecursively(JobCategory category) {
+        category.setActive(false);
+        jobCategoryRepository.save(category);
+        category.getSubCategories().forEach(this::deactivateRecursively);
     }
 }

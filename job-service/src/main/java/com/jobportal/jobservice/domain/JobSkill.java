@@ -23,6 +23,7 @@ public class JobSkill {
     private String name;
     @Column(unique = true)
     private String slug;
+    @Enumerated(EnumType.STRING)
     private SkillCategory category;
     @Builder.Default
     private Boolean active = true;

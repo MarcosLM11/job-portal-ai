@@ -20,6 +20,8 @@ public class JobTag {
     private String name;
     @Column(unique = true)
     private String slug;
+    @Builder.Default
+    private Boolean active = true;
     @Column(nullable = false, updatable = false)
     @CreationTimestamp
     private LocalDateTime createdAt;

@@ -2,6 +2,7 @@ package com.jobportal.jobservice.controller;
 
 import com.jobportal.jobservice.exception.JobNotFoundException;
 import com.jobportal.jobservice.exception.JobExpiredException;
+import com.jobportal.jobservice.exception.JobCompanyMismatchException;
 import com.jobportal.jobservice.exception.WrongEmployerException;
 import com.jobportal.jobservice.exception.JobCategoryAlreadyExistsException;
 import com.jobportal.jobservice.exception.JobCategoryNotFoundException;
@@ -36,6 +37,12 @@ public class ControllerAdvice {
     ProblemDetail handleWrongEmployer(WrongEmployerException ex) {
         log.warn("Wrong Employer: {}", ex.getMessage());
         return ProblemDetail.forStatusAndDetail(HttpStatus.FORBIDDEN, ex.getMessage());
+    }
+
+    @ExceptionHandler(JobCompanyMismatchException.class)
+    ProblemDetail handleJobCompanyMismatch(JobCompanyMismatchException ex) {
+        log.warn("Job Company Mismatch: {}", ex.getMessage());
+        return ProblemDetail.forStatusAndDetail(HttpStatus.CONFLICT, ex.getMessage());
     }
 
     @ExceptionHandler(JobCategoryAlreadyExistsException.class)

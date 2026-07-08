@@ -5,13 +5,15 @@ import com.jobportal.jobservice.dto.JobTagResponse;
 import com.jobportal.jobservice.service.JobTagService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import java.util.List;
 
 @RestController
-@RequestMapping("/api/job-tags")
+@RequestMapping("/api/v1/job-tags")
 @RequiredArgsConstructor
 public class JobTagController {
     private final JobTagService jobTagService;
@@ -22,13 +24,13 @@ public class JobTagController {
     }
 
     @GetMapping
-    public ResponseEntity<List<JobTagResponse>> getAllJobTags() {
-        return ResponseEntity.ok(jobTagService.getAllTags());
+    public ResponseEntity<Page<JobTagResponse>> getAllJobTags(@PageableDefault(size = 20, sort = "name") Pageable pageable) {
+        return ResponseEntity.ok(jobTagService.getAllTags(pageable));
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<JobTagResponse> getJobTag(@PathVariable long id) {
-        return ResponseEntity.ok(jobTagService.getById(id));
+        return ResponseEntity.ok(jobTagService.getTagById(id));
     }
 
     @PutMapping("/{id}")

@@ -5,13 +5,15 @@ import com.jobportal.jobservice.dto.JobSkillResponse;
 import com.jobportal.jobservice.service.JobSkillService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import java.util.List;
 
 @RestController
-@RequestMapping("/api/job-skills")
+@RequestMapping("/api/v1/job-skills")
 @RequiredArgsConstructor
 public class JobSkillController {
     private final JobSkillService jobSkillService;
@@ -22,8 +24,8 @@ public class JobSkillController {
     }
 
     @GetMapping
-    public ResponseEntity<List<JobSkillResponse>> getAllSkills() {
-        return ResponseEntity.ok(jobSkillService.getAllSkills());
+    public ResponseEntity<Page<JobSkillResponse>> getAllSkills(@PageableDefault(size = 20, sort = "name") Pageable pageable) {
+        return ResponseEntity.ok(jobSkillService.getAllSkills(pageable));
     }
 
     @GetMapping("/{id}")
@@ -38,7 +40,7 @@ public class JobSkillController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteJobSkill(@PathVariable Long id) {
-        jobSkillService.deleteSkillById(id);
+        jobSkillService.deleteSkill(id);
         return ResponseEntity.noContent().build();
     }
 
