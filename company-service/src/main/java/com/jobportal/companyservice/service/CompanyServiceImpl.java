@@ -8,6 +8,7 @@ import com.jobportal.companyservice.exception.*;
 import com.jobportal.companyservice.repository.CompanyRepository;
 import com.jobportal.companyservice.util.CompanyMapper;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.util.ArrayList;
@@ -18,6 +19,7 @@ import static com.jobportal.companyservice.util.CompanyMapper.toDto;
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
+@Slf4j
 public class CompanyServiceImpl implements CompanyService {
     private final CompanyRepository companyRepository;
 
@@ -25,9 +27,9 @@ public class CompanyServiceImpl implements CompanyService {
     @Transactional
     public CompanyResponse createCompany(Long ownerId, CompanyRequest request) {
 
-        if(companyRepository.existsByName(request.name())) throw new CompanyNameAlreadyExistsException("A company with that name already exists, please choose another name.");
-        if(companyRepository.existsByOwnerId(ownerId)) throw new AlreadyHaveCompanyException("You already own a company, only one company per owner is allowed.");
-        if(request.registrationNumber() != null && companyRepository.existsByRegistrationNumber(request.registrationNumber())) throw new RegistrationNumberAlreadyExistsException("A company with that registration number already exists, please choose a different registration number.");
+        if(Boolean.TRUE.equals(companyRepository.existsByName(request.name()))) throw new CompanyNameAlreadyExistsException("A company with that name already exists, please choose another name.");
+        if(Boolean.TRUE.equals(companyRepository.existsByOwnerId(ownerId))) throw new AlreadyHaveCompanyException("You already own a company, only one company per owner is allowed.");
+        if(request.registrationNumber() != null && Boolean.TRUE.equals(companyRepository.existsByRegistrationNumber(request.registrationNumber()))) throw new RegistrationNumberAlreadyExistsException("A company with that registration number already exists, please choose a different registration number.");
 
         var slug = generateUniqueSlug(request.name());
 
@@ -52,6 +54,7 @@ public class CompanyServiceImpl implements CompanyService {
                 .build();
 
         var savedCompany = companyRepository.save(company);
+        log.info("Company created: companyId={}, ownerId={}, name={}", savedCompany.getId(), ownerId, savedCompany.getName());
 
         return toDto(savedCompany);
     }
@@ -80,8 +83,8 @@ public class CompanyServiceImpl implements CompanyService {
     public CompanyResponse updateCompany(Long companyId, Long ownerId, CompanyRequest request) {
         var company = getCompanyEntityById(companyId);
 
-        if (!company.getName().equals(request.name()) && companyRepository.existsByName(request.name())) throw new CompanyNameAlreadyExistsException("A company with that name already exists, please choose another name.");
-        if (request.registrationNumber() != null && !request.registrationNumber().equals(company.getRegistrationNumber()) && companyRepository.existsByRegistrationNumber(request.registrationNumber()))
+        if (!company.getName().equals(request.name()) && Boolean.TRUE.equals(companyRepository.existsByName(request.name()))) throw new CompanyNameAlreadyExistsException("A company with that name already exists, please choose another name.");
+        if (request.registrationNumber() != null && !request.registrationNumber().equals(company.getRegistrationNumber()) && Boolean.TRUE.equals(companyRepository.existsByRegistrationNumber(request.registrationNumber())))
             throw new RegistrationNumberAlreadyExistsException("A company with that registration number already exists, please choose a different registration number.");
 
         company.setName(request.name());
@@ -99,7 +102,9 @@ public class CompanyServiceImpl implements CompanyService {
         company.setRegistrationNumber(request.registrationNumber());
         company.setSocialLinks(mapSocialLinks(request.socialLinks()));
 
-        return toDto(companyRepository.save(company));
+        var updatedCompany = companyRepository.save(company);
+        log.info("Company updated: companyId={}, ownerId={}", companyId, ownerId);
+        return toDto(updatedCompany);
     }
 
     @Override
@@ -109,7 +114,9 @@ public class CompanyServiceImpl implements CompanyService {
         company.setCompanyStatus(CompanyStatus.ACTIVE);
         company.setIsVerified(true);
         company.setActive(true);
-        return toDto(companyRepository.save(company));
+        var verifiedCompany = companyRepository.save(company);
+        log.info("Company verified: companyId={}", companyId);
+        return toDto(verifiedCompany);
     }
 
     @Override
@@ -118,6 +125,7 @@ public class CompanyServiceImpl implements CompanyService {
         var company = getCompanyEntityById(companyId);
         assertOwner(company.getOwnerId(),ownerId);
         companyRepository.delete(company);
+        log.info("Company deleted: companyId={}, ownerId={}", companyId, ownerId);
     }
 
     @Override
@@ -127,7 +135,9 @@ public class CompanyServiceImpl implements CompanyService {
         company.setCompanyStatus(CompanyStatus.SUSPENDED);
         company.setIsVerified(false);
         company.setActive(false);
-        return toDto(companyRepository.save(company));
+        var deactivatedCompany = companyRepository.save(company);
+        log.info("Company deactivated: companyId={}", companyId);
+        return toDto(deactivatedCompany);
     }
 
     @Override
@@ -152,10 +162,10 @@ public class CompanyServiceImpl implements CompanyService {
                 .trim()
                 .replaceAll("[\\s-]+", "-");
 
-        if(!companyRepository.existsBySlug(base)) return base;
+        if(!Boolean.TRUE.equals(companyRepository.existsBySlug(base))) return base;
 
         var counter = 1;
-        while (companyRepository.existsBySlug(base+"-"+counter)) counter++;
+        while (Boolean.TRUE.equals(companyRepository.existsBySlug(base+"-"+counter))) counter++;
         return base+"-"+counter;
     }
 

@@ -18,37 +18,37 @@ public class ControllerAdvice {
 
     @ExceptionHandler(CompanyNotFoundException.class)
     ProblemDetail handleCompanyNotFound(CompanyNotFoundException ex) {
-        log.error("Company Not Found", ex);
+        log.warn("Company Not Found: {}", ex.getMessage());
         return ProblemDetail.forStatusAndDetail(HttpStatus.NOT_FOUND, ex.getMessage());
     }
 
     @ExceptionHandler(CompanyAlreadyExistsException.class)
     ProblemDetail handleCompanyAlreadyExists(CompanyAlreadyExistsException ex) {
-        log.error("Company Already Exists", ex);
+        log.warn("Company Already Exists: {}", ex.getMessage());
         return ProblemDetail.forStatusAndDetail(HttpStatus.CONFLICT, ex.getMessage());
     }
 
     @ExceptionHandler(CompanyNameAlreadyExistsException.class)
     ProblemDetail handleCompanyNameAlreadyExists(CompanyNameAlreadyExistsException ex) {
-        log.error("Company Name Already Exists", ex);
+        log.warn("Company Name Already Exists: {}", ex.getMessage());
         return ProblemDetail.forStatusAndDetail(HttpStatus.CONFLICT, ex.getMessage());
     }
 
     @ExceptionHandler(RegistrationNumberAlreadyExistsException.class)
     ProblemDetail handleRegistrationNumberAlreadyExists(RegistrationNumberAlreadyExistsException ex) {
-        log.error("Registration Number Already Exists", ex);
+        log.warn("Registration Number Already Exists: {}", ex.getMessage());
         return ProblemDetail.forStatusAndDetail(HttpStatus.CONFLICT, ex.getMessage());
     }
 
     @ExceptionHandler(AlreadyHaveCompanyException.class)
     ProblemDetail handleAlreadyHaveCompany(AlreadyHaveCompanyException ex) {
-        log.error("User Already Has A Company", ex);
+        log.warn("User Already Has A Company: {}", ex.getMessage());
         return ProblemDetail.forStatusAndDetail(HttpStatus.CONFLICT, ex.getMessage());
     }
 
     @ExceptionHandler(NotOwnerException.class)
     ProblemDetail handleNotOwner(NotOwnerException ex) {
-        log.error("Not Owner", ex);
+        log.warn("Not Owner: {}", ex.getMessage());
         return ProblemDetail.forStatusAndDetail(HttpStatus.FORBIDDEN, ex.getMessage());
     }
 }
