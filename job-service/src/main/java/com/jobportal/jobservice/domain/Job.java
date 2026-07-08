@@ -4,8 +4,8 @@ import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
-
-import java.time.Instant;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name="jobs")
@@ -35,6 +35,9 @@ public class Job {
     @Column(nullable = false)
     private Long companyId;
 
+    @Column(nullable = false)
+    private Long employerId;
+
     @Embedded
     private JobLocation location;
 
@@ -58,17 +61,17 @@ public class Job {
     private JobStatus jobStatus;
 
     private Integer openings = 1;
-    private Instant applicationDeadline;
-    private Instant expiresAt;
+    private LocalDate applicationDeadline;
+    private LocalDate expiresAt;
     private Boolean active = true;
 
     @CreationTimestamp
     @Column(nullable=false)
-    private Instant createdAt;
+    private LocalDateTime createdAt;
     @UpdateTimestamp
     @Column(nullable=false)
-    private Instant updatedAt;
+    private LocalDateTime updatedAt;
 
-    private Instant publishedAt;
-    private Instant closedAt;
+    private LocalDateTime publishedAt;
+    private LocalDateTime closedAt;
 }
