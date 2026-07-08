@@ -7,7 +7,7 @@
 ### =============================================================
 
 ### [AUTH-1] Signup - Job Seeker (happy path)
-POST {{baseUrl}}/api/auth/signup
+POST {{baseUrl}}/api/v1/auth/signup
 Content-Type: {{contentType}}
 
 {
@@ -21,7 +21,7 @@ Content-Type: {{contentType}}
 ###
 
 ### [AUTH-2] Signup - Employer (happy path)
-POST {{baseUrl}}/api/auth/signup
+POST {{baseUrl}}/api/v1/auth/signup
 Content-Type: {{contentType}}
 
 {
@@ -35,7 +35,7 @@ Content-Type: {{contentType}}
 ###
 
 ### [AUTH-3] Signup - Admin role rejected (expect 403)
-POST {{baseUrl}}/api/auth/signup
+POST {{baseUrl}}/api/v1/auth/signup
 Content-Type: {{contentType}}
 
 {
@@ -49,7 +49,7 @@ Content-Type: {{contentType}}
 ###
 
 ### [AUTH-4] Signup - Duplicate email (expect 409)
-POST {{baseUrl}}/api/auth/signup
+POST {{baseUrl}}/api/v1/auth/signup
 Content-Type: {{contentType}}
 
 {
@@ -63,7 +63,7 @@ Content-Type: {{contentType}}
 ###
 
 ### [AUTH-5] Signup - Missing required fields (expect 400)
-POST {{baseUrl}}/api/auth/signup
+POST {{baseUrl}}/api/v1/auth/signup
 Content-Type: {{contentType}}
 
 {
@@ -75,7 +75,7 @@ Content-Type: {{contentType}}
 ###
 
 ### [AUTH-6] Login - Valid credentials (happy path)
-POST {{baseUrl}}/api/auth/login
+POST {{baseUrl}}/api/v1/auth/login
 Content-Type: {{contentType}}
 
 {
@@ -86,7 +86,7 @@ Content-Type: {{contentType}}
 ###
 
 ### [AUTH-7] Login - Wrong password (expect 401)
-POST {{baseUrl}}/api/auth/login
+POST {{baseUrl}}/api/v1/auth/login
 Content-Type: {{contentType}}
 
 {
@@ -97,7 +97,7 @@ Content-Type: {{contentType}}
 ###
 
 ### [AUTH-8] Login - Non-existent user (expect 404)
-POST {{baseUrl}}/api/auth/login
+POST {{baseUrl}}/api/v1/auth/login
 Content-Type: {{contentType}}
 
 {
@@ -108,7 +108,7 @@ Content-Type: {{contentType}}
 ###
 
 ### [AUTH-9] Login - Invalid email format (expect 400)
-POST {{baseUrl}}/api/auth/login
+POST {{baseUrl}}/api/v1/auth/login
 Content-Type: {{contentType}}
 
 {
@@ -135,7 +135,7 @@ X-User-Email: ghost@example.com
 ###
 
 ### [USER-3] Update own profile (happy path)
-POST {{baseUrl}}/api/v1/users/me
+PATCH {{baseUrl}}/api/v1/users/me
 Content-Type: {{contentType}}
 X-User-Email: jane.doe@example.com
 
@@ -148,7 +148,7 @@ X-User-Email: jane.doe@example.com
 ###
 
 ### [USER-4] Update own profile - Non-existent user (expect 404)
-POST {{baseUrl}}/api/v1/users/me
+PATCH {{baseUrl}}/api/v1/users/me
 Content-Type: {{contentType}}
 X-User-Email: ghost@example.com
 
@@ -186,7 +186,7 @@ PATCH {{baseUrl}}/api/v1/users/1/activate
 ###
 
 ### [USER-10] Soft-delete user (replace 1 with a real ID)
-PATCH {{baseUrl}}/api/v1/users/1/delete
+DELETE {{baseUrl}}/api/v1/users/1
 
 ###
 

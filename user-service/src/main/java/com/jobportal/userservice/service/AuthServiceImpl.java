@@ -8,6 +8,7 @@ import com.jobportal.userservice.dto.LoginRequest;
 import com.jobportal.userservice.dto.SignupRequest;
 import com.jobportal.userservice.exception.AdminRoleNotAllowedException;
 import com.jobportal.userservice.exception.EmailAlreadyExistsException;
+import com.jobportal.userservice.exception.InvalidPasswordException;
 import com.jobportal.userservice.exception.UserNotExistsException;
 import com.jobportal.userservice.repository.UserRepository;
 import com.jobportal.userservice.security.JwtProvider;
@@ -66,10 +67,13 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public AuthResponse login(LoginRequest request) {
-        var authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(request.email(), request.password()));
+        var user = userRepository.findByEmail(request.email()).orElseThrow(UserNotExistsException::new);
+
+        if (!passwordEncoder.matches(request.password(), user.getPassword())) throw new InvalidPasswordException();
+
+        var authentication = new UsernamePasswordAuthenticationToken(user.getEmail(), user.getPassword());
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
-        var user = userRepository.findByEmail(request.email()).orElseThrow(UserNotExistsException::new);
         log.info("User logged in: id={}, email={}, role={}", user.getId(), user.getEmail(), user.getRole());
         var jwt = jwtProvider.generateToken(authentication, user.getId());
         user.setLastLogin(Instant.now());

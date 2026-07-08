@@ -12,7 +12,7 @@ import java.util.Date;
 @Slf4j
 @Component
 public class JwtProvider {
-    private static final String SECRET_KEY = "clave_secreta_123";
+    private static final String SECRET_KEY = "clave_secreta_123ÑLKJASDFÑLKJñlkjasdfpoiuwerasdlfjrñosbadlñjsdalñkcnasñdlkfasdfkj123u094835071934279";
     private static final long EXPIRATION_TIME = 3_600_000L;
     private final SecretKey  secretKey = Keys.hmacShaKeyFor(SECRET_KEY.getBytes());
 
