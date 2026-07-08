@@ -3,10 +3,14 @@ package com.jobportal.jobservice.service;
 import com.jobportal.jobservice.domain.JobSkill;
 import com.jobportal.jobservice.dto.JobSkillRequest;
 import com.jobportal.jobservice.dto.JobSkillResponse;
+import com.jobportal.jobservice.exception.JobSkillAlreadyExistsException;
+import com.jobportal.jobservice.exception.JobSkillNotFoundException;
 import com.jobportal.jobservice.repository.JobSkillRepository;
 import com.jobportal.jobservice.util.JobSkillMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -15,11 +19,12 @@ import static com.jobportal.jobservice.util.JobSkillMapper.toDto;
 @Service
 @RequiredArgsConstructor
 public class JobSkillServiceImpl implements JobSkillService {
+    private static final String ERROR = "Job Skill already exists ";
     private final JobSkillRepository jobSkillRepository;
 
     @Override
     public JobSkillResponse createSkill(JobSkillRequest request) {
-        if (jobSkillRepository.existsByName(request.name())) throw new JobSkillExistsException();
+        if (jobSkillRepository.existsByName(request.name())) throw new JobSkillAlreadyExistsException();
 
         var slug = generateUniqueSlug(request.name());
         var jobSkill = JobSkill.builder()
@@ -42,12 +47,12 @@ public class JobSkillServiceImpl implements JobSkillService {
     public JobSkillResponse getSkillById(Long id) {
         return jobSkillRepository.findById(id)
                 .map(JobSkillMapper::toDto)
-                .orElseThrow(() -> new JobSkillNotFoundException("Job skill not found with id: " + id));
+                .orElseThrow(() -> new JobSkillNotFoundException(ERROR + id));
     }
 
     @Override
     public JobSkillResponse updateSkill(Long id, JobSkillRequest request) {
-        var jobSkill = jobSkillRepository.findById(id).orElseThrow(() -> new JobSkillNotFoundException("Job skill not found with id: " + id));
+        var jobSkill = jobSkillRepository.findById(id).orElseThrow(() -> new JobSkillNotFoundException(ERROR + id));
 
         if (!jobSkill.getName().equals(request.name()) && jobSkillRepository.existsByName(request.name())) throw new JobSkillAlreadyExistsException();
 
@@ -58,16 +63,14 @@ public class JobSkillServiceImpl implements JobSkillService {
 
     @Override
     public void deleteSkillById(Long id) {
-        var jobSkill = jobSkillRepository.findById(id).orElseThrow(() -> new JobSkillNotFoundException("Job skill not found with id: " + id));
+        var jobSkill = jobSkillRepository.findById(id).orElseThrow(() -> new JobSkillNotFoundException(ERROR + id));
         jobSkill.setActive(false);
         jobSkillRepository.save(jobSkill);
     }
 
     @Override
-    public Set<JobSkillResponse> getSkillsByIds(Set<Long> ids) {
-        return jobSkillRepository.findAllById(ids).stream()
-                .map(JobSkillMapper::toDto)
-                .collect(Collectors.toSet());
+    public Set<JobSkill> getSkillsByIds(Set<Long> ids) {
+        return new HashSet<>(jobSkillRepository.findAllById(ids));
     }
 
     private String generateUniqueSlug(String name) {

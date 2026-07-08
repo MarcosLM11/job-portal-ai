@@ -9,6 +9,8 @@ import com.jobportal.jobservice.exception.JobCategoryParentException;
 import com.jobportal.jobservice.exception.JobSkillNotFoundException;
 import com.jobportal.jobservice.exception.JobSkillExistsException;
 import com.jobportal.jobservice.exception.JobSkillAlreadyExistsException;
+import com.jobportal.jobservice.exception.JobTagNotFoundException;
+import com.jobportal.jobservice.exception.JobTagAlreadyExistsException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
@@ -70,6 +72,18 @@ public class ControllerAdvice {
     @ExceptionHandler(JobSkillAlreadyExistsException.class)
     ProblemDetail handleJobSkillAlreadyExists(JobSkillAlreadyExistsException ex) {
         log.warn("Job Skill Already Exists", ex);
+        return ProblemDetail.forStatusAndDetail(HttpStatus.CONFLICT, ex.getMessage());
+    }
+
+    @ExceptionHandler(JobTagNotFoundException.class)
+    ProblemDetail handleJobTagNotFound(JobTagNotFoundException ex) {
+        log.warn("Job Tag Not Found", ex);
+        return ProblemDetail.forStatusAndDetail(HttpStatus.NOT_FOUND, ex.getMessage());
+    }
+
+    @ExceptionHandler(JobTagAlreadyExistsException.class)
+    ProblemDetail handleJobTagAlreadyExists(JobTagAlreadyExistsException ex) {
+        log.warn("Job Tag Already Exists", ex);
         return ProblemDetail.forStatusAndDetail(HttpStatus.CONFLICT, ex.getMessage());
     }
 }

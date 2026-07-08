@@ -6,6 +6,7 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Set;
 
 @Entity
 @Table(name="jobs")
@@ -37,6 +38,15 @@ public class Job {
 
     @Column(nullable = false)
     private Long employerId;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    private JobCategory jobCategory;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    private Set<JobSkill> skills;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    private Set<JobTag> tags;
 
     @Embedded
     private JobLocation location;

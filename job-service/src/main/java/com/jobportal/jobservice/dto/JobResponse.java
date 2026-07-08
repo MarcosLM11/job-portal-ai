@@ -9,6 +9,7 @@ import lombok.Builder;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Set;
 
 @Builder
 public record JobResponse(
@@ -22,9 +23,9 @@ public record JobResponse(
         CompanyResponse company,
         Long employerId,
 
-        //JobCategoryResponse category,
-        //Set<JobSkillResponse> skills,
-        //Set<JobTagResponse> tags,
+        JobCategoryResponse category,
+        Set<JobSkillResponse> skills,
+        Set<JobTagResponse> tags,
 
         String address,
         String city,
