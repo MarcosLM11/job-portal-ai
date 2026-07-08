@@ -60,18 +60,21 @@ public class JobServiceImpl implements JobService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public JobResponse getJobById(Long id) {
         var job = jobRepository.findById(id).orElseThrow(JobNotFoundException::new);
         return convertToResponse(job);
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<JobResponse> getJobs(JobSearchRequest request) {
         var jobs = jobRepository.findAll(JobSpecification.build(request));
         return jobs.stream().map(this::convertToResponse).toList();
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<JobResponse> getJobsByCompany(Long companyId) {
         var jobs = jobRepository.findByCompanyId(companyId);
         return jobs.stream().map(this::convertToResponse).toList();
@@ -137,6 +140,7 @@ public class JobServiceImpl implements JobService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<JobResponse> getAllJobsAdmin() {
         return jobRepository.findAll().stream().map(this::convertToResponse).toList();
     }

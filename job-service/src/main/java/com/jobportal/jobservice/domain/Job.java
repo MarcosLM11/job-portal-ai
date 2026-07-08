@@ -76,6 +76,7 @@ public class Job {
     @Column(nullable = false)
     private JobStatus jobStatus;
 
+    @Builder.Default
     private Integer openings = 1;
     private LocalDate applicationDeadline;
     private LocalDate expiresAt;

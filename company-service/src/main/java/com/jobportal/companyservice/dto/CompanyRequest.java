@@ -1,7 +1,6 @@
 package com.jobportal.companyservice.dto;
 
 import com.jobportal.companyservice.domain.CompanySize;
-import com.jobportal.companyservice.domain.CompanyStatus;
 import com.jobportal.companyservice.domain.CompanyType;
 import com.jobportal.companyservice.domain.IndustryType;
 import jakarta.validation.constraints.*;
@@ -31,8 +30,6 @@ public record CompanyRequest(
         CompanyType companyType,
         @NotNull(message="Industry type is required")
         IndustryType industryType,
-        @NotNull(message="Company status is required")
-        CompanyStatus companyStatus,
 
         String registrationNumber,
         List<SocialLinkResponse> socialLinks

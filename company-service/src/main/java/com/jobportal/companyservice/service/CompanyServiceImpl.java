@@ -45,7 +45,7 @@ public class CompanyServiceImpl implements CompanyService {
                 .companySize(request.companySize())
                 .companyType(request.companyType())
                 .industryType(request.industryType())
-                .companyStatus(request.companyStatus())
+                .companyStatus(CompanyStatus.PENDING_VERIFICATION)
                 .registrationNumber(request.registrationNumber())
                 .ownerId(ownerId)
                 .socialLinks(mapSocialLinks(request.socialLinks()))
@@ -80,9 +80,9 @@ public class CompanyServiceImpl implements CompanyService {
     public CompanyResponse updateCompany(Long companyId, Long ownerId, CompanyRequest request) {
         var company = getCompanyEntityById(companyId);
 
-        if (!company.getName().equals(request.name()) && companyRepository.existsByName(request.name())) throw new CompanyAlreadyExistsException("A company with that name already exists, please choose another name.");
+        if (!company.getName().equals(request.name()) && companyRepository.existsByName(request.name())) throw new CompanyNameAlreadyExistsException("A company with that name already exists, please choose another name.");
         if (request.registrationNumber() != null && !request.registrationNumber().equals(company.getRegistrationNumber()) && companyRepository.existsByRegistrationNumber(request.registrationNumber()))
-            throw new CompanyAlreadyExistsException("You already own a company, only one company per owner is allowed.");
+            throw new RegistrationNumberAlreadyExistsException("A company with that registration number already exists, please choose a different registration number.");
 
         company.setName(request.name());
         company.setTagline(request.tagline());
