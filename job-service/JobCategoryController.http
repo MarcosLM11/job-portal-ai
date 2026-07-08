@@ -1,0 +1,111 @@
+### Job Category Controller Tests
+### Base URL: http://localhost:8083/api/job-categories
+
+### 1. Create a new Job Category
+POST http://localhost:8083/api/job-categories
+Content-Type: application/json
+
+{
+  "name": "Software Development",
+  "description": "Jobs related to software development and programming",
+  "iconUrl": "https://example.com/icons/software.png",
+  "parentId": null
+}
+
+### 2. Create a Sub Category
+POST http://localhost:8083/api/job-categories
+Content-Type: application/json
+
+{
+  "name": "Backend Development",
+  "description": "Backend development roles",
+  "iconUrl": "https://example.com/icons/backend.png",
+  "parentId": 1
+}
+
+### 3. Create another category
+POST http://localhost:8083/api/job-categories
+Content-Type: application/json
+
+{
+  "name": "Data Science",
+  "description": "Data science and analytics roles",
+  "iconUrl": "https://example.com/icons/data.png",
+  "parentId": null
+}
+
+### 4. Get all Job Categories
+GET http://localhost:8083/api/job-categories
+
+### 5. Get Job Category by ID
+GET http://localhost:8083/api/job-categories/1
+
+### 6. Get Job Category by ID (2)
+GET http://localhost:8083/api/job-categories/2
+
+### 7. Get Job Category by ID (3)
+GET http://localhost:8083/api/job-categories/3
+
+### 8. Update Job Category (1)
+PUT http://localhost:8083/api/job-categories/1
+Content-Type: application/json
+
+{
+  "name": "Software Development (Updated)",
+  "description": "Updated description for software development",
+  "iconUrl": "https://example.com/icons/software-updated.png",
+  "parentId": null
+}
+
+### 9. Update Job Category (2)
+PUT http://localhost:8083/api/job-categories/2
+Content-Type: application/json
+
+{
+  "name": "Full Stack Development",
+  "description": "Full stack development roles",
+  "iconUrl": "https://example.com/icons/fullstack.png",
+  "parentId": 1
+}
+
+### 10. Delete Job Category (3)
+DELETE http://localhost:8083/api/job-categories/3
+
+### 11. Get all Job Categories after deletion
+GET http://localhost:8083/api/job-categories
+
+### 12. Try to get deleted category (should fail)
+GET http://localhost:8083/api/job-categories/3
+
+### 13. Try to create duplicate category (should fail)
+POST http://localhost:8083/api/job-categories
+Content-Type: application/json
+
+{
+  "name": "Software Development (Updated)",
+  "description": "This should fail because name already exists",
+  "iconUrl": "https://example.com/icons/duplicate.png",
+  "parentId": null
+}
+
+### 14. Try to create category with invalid parent (should fail)
+POST http://localhost:8083/api/job-categories
+Content-Type: application/json
+
+{
+  "name": "Invalid Parent Category",
+  "description": "Testing invalid parent",
+  "iconUrl": "https://example.com/icons/invalid.png",
+  "parentId": 999
+}
+
+### 15. Try to create category without name (should fail)
+POST http://localhost:8083/api/job-categories
+Content-Type: application/json
+
+{
+  "name": "",
+  "description": "No name provided",
+  "iconUrl": "https://example.com/icons/noname.png",
+  "parentId": null
+}

@@ -1,0 +1,308 @@
+### Job Controller Tests
+### Base URL: http://localhost:8083/api/jobs
+### Note: X-User-Id header simulates authenticated employer user
+
+### Prerequisites: Create categories and skills first
+### 1. Create Job Category (run JobCategoryController.http first)
+### 2. Create Job Skills (run JobSkillController.http first)
+
+### 1. Create a new Job (Full Time, Remote)
+POST http://localhost:8083/api/jobs
+Content-Type: application/json
+X-User-Id: 1
+
+{
+  "title": "Senior Java Developer",
+  "description": "We are looking for an experienced Java developer to join our team",
+  "requirements": "5+ years of Java experience, Spring Boot knowledge required",
+  "responsibilities": "Develop and maintain microservices, code review, mentor junior developers",
+  "benefits": "Competitive salary, health insurance, remote work",
+  "categoryId": 1,
+  "skillIds": [1, 2, 3],
+  "tagIds": [1],
+  "address": "123 Tech Street",
+  "city": "San Francisco",
+  "state": "CA",
+  "country": "USA",
+  "zipCode": "94105",
+  "minSalary": 120000,
+  "maxSalary": 180000,
+  "jobType": "FULL_TIME",
+  "workMode": "REMOTE",
+  "experienceLevel": "SENIOR_LEVEL",
+  "openings": 2,
+  "applicationDeadLine": "2026-08-31",
+  "expiresAt": "2026-12-31"
+}
+
+### 2. Create another Job (Contract, Hybrid)
+POST http://localhost:8083/api/jobs
+Content-Type: application/json
+X-User-Id: 1
+
+{
+  "title": "Python Data Scientist",
+  "description": "Looking for a data scientist to work on ML projects",
+  "requirements": "Python, Machine Learning, SQL",
+  "responsibilities": "Develop ML models, data analysis, visualization",
+  "benefits": "Flexible hours, learning budget",
+  "categoryId": 1,
+  "skillIds": [6],
+  "tagIds": [2, 3],
+  "address": "456 Data Avenue",
+  "city": "New York",
+  "state": "NY",
+  "country": "USA",
+  "zipCode": "10001",
+  "minSalary": 100000,
+  "maxSalary": 160000,
+  "jobType": "CONTRACT",
+  "workMode": "HYBRID",
+  "experienceLevel": "MID_LEVEL",
+  "openings": 1,
+  "applicationDeadLine": "2026-09-15",
+  "expiresAt": "2026-11-30"
+}
+
+### 3. Create another Job (Part Time, On-site)
+POST http://localhost:8083/api/jobs
+Content-Type: application/json
+X-User-Id: 2
+
+{
+  "title": "Junior Frontend Developer",
+  "description": "Entry-level position for frontend development",
+  "requirements": "HTML, CSS, JavaScript basics",
+  "responsibilities": "Develop UI components, fix bugs, write tests",
+  "benefits": "Training program, mentorship",
+  "categoryId": 1,
+  "skillIds": [2],
+  "tagIds": [1, 4],
+  "address": "789 Frontend Lane",
+  "city": "Austin",
+  "state": "TX",
+  "country": "USA",
+  "zipCode": "78701",
+  "minSalary": 50000,
+  "maxSalary": 70000,
+  "jobType": "PART_TIME",
+  "workMode": "ON_SITE",
+  "experienceLevel": "ENTRY_LEVEL",
+  "openings": 3,
+  "applicationDeadLine": "2026-09-30",
+  "expiresAt": "2026-10-31"
+}
+
+### 4. Get Job by ID (1)
+GET http://localhost:8083/api/jobs/1
+
+### 5. Get Job by ID (2)
+GET http://localhost:8083/api/jobs/2
+
+### 6. Get Job by ID (3)
+GET http://localhost:8083/api/jobs/3
+
+### 7. Get all Jobs with default search
+GET http://localhost:8083/api/jobs
+
+### 8. Get all Jobs with search - filter by city
+GET http://localhost:8083/api/jobs?city=San%20Francisco
+
+### 9. Get all Jobs with search - filter by job type
+GET http://localhost:8083/api/jobs?jobType=FULL_TIME
+
+### 10. Get all Jobs with search - filter by work mode
+GET http://localhost:8083/api/jobs?workMode=REMOTE
+
+### 11. Get all Jobs with search - filter by experience level
+GET http://localhost:8083/api/jobs?experienceLevel=SENIOR_LEVEL
+
+### 12. Get Jobs by Company ID (1)
+GET http://localhost:8083/api/jobs/company/1
+
+### 13. Get all Jobs as Admin
+GET http://localhost:8083/api/jobs/admin
+
+### 14. Update Job (1) - Change title and description
+PUT http://localhost:8083/api/jobs/1
+Content-Type: application/json
+X-User-Id: 1
+
+{
+  "title": "Lead Java Developer (Updated)",
+  "description": "Looking for a lead Java developer to manage team",
+  "requirements": "7+ years of Java experience, team management skills",
+  "responsibilities": "Lead development team, architecture decisions, code review",
+  "benefits": "Competitive salary, health insurance, remote work, stock options",
+  "categoryId": 1,
+  "skillIds": [1, 2, 3],
+  "tagIds": [1],
+  "address": "123 Tech Street",
+  "city": "San Francisco",
+  "state": "CA",
+  "country": "USA",
+  "zipCode": "94105",
+  "minSalary": 150000,
+  "maxSalary": 220000,
+  "jobType": "FULL_TIME",
+  "workMode": "REMOTE",
+  "experienceLevel": "LEAD",
+  "openings": 1,
+  "applicationDeadLine": "2026-08-31",
+  "expiresAt": "2026-12-31"
+}
+
+### 15. Update Job (2) - Change salary range
+PUT http://localhost:8083/api/jobs/2
+Content-Type: application/json
+X-User-Id: 1
+
+{
+  "title": "Python Data Scientist (Updated)",
+  "description": "Looking for a data scientist to work on ML projects",
+  "requirements": "Python, Machine Learning, SQL, TensorFlow",
+  "responsibilities": "Develop ML models, data analysis, visualization, production deployment",
+  "benefits": "Flexible hours, learning budget, home office setup",
+  "categoryId": 1,
+  "skillIds": [6],
+  "tagIds": [2, 3],
+  "address": "456 Data Avenue",
+  "city": "New York",
+  "state": "NY",
+  "country": "USA",
+  "zipCode": "10001",
+  "minSalary": 120000,
+  "maxSalary": 180000,
+  "jobType": "CONTRACT",
+  "workMode": "HYBRID",
+  "experienceLevel": "MID_LEVEL",
+  "openings": 1,
+  "applicationDeadLine": "2026-09-15",
+  "expiresAt": "2026-11-30"
+}
+
+### 16. Publish Job (1)
+PATCH http://localhost:8083/api/jobs/1/publish
+X-User-Id: 1
+
+### 17. Publish Job (2)
+PATCH http://localhost:8083/api/jobs/2/publish
+X-User-Id: 1
+
+### 18. Publish Job (3)
+PATCH http://localhost:8083/api/jobs/3/publish
+X-User-Id: 2
+
+### 19. Close Job (1)
+PATCH http://localhost:8083/api/jobs/1/close
+X-User-Id: 1
+
+### 20. Get Job (1) after closing
+GET http://localhost:8083/api/jobs/1
+
+### 21. Try to update job with wrong employer ID (should fail)
+PUT http://localhost:8083/api/jobs/2
+Content-Type: application/json
+X-User-Id: 999
+
+{
+  "title": "Unauthorized Update",
+  "description": "This should fail",
+  "requirements": "None",
+  "responsibilities": "None",
+  "benefits": "None",
+  "categoryId": 1,
+  "skillIds": [],
+  "tagIds": [],
+  "address": "Street",
+  "city": "City",
+  "state": "State",
+  "country": "Country",
+  "zipCode": "12345",
+  "minSalary": 50000,
+  "maxSalary": 80000,
+  "jobType": "FULL_TIME",
+  "workMode": "REMOTE",
+  "experienceLevel": "JUNIOR",
+  "openings": 1,
+  "applicationDeadLine": "2026-09-15",
+  "expiresAt": "2026-12-31"
+}
+
+### 22. Try to close job with wrong employer ID (should fail)
+PATCH http://localhost:8083/api/jobs/2/close
+X-User-Id: 999
+
+### 23. Try to publish already published job
+PATCH http://localhost:8083/api/jobs/2/publish
+X-User-Id: 1
+
+### 24. Try to create job with invalid category (should fail)
+POST http://localhost:8083/api/jobs
+Content-Type: application/json
+X-User-Id: 1
+
+{
+  "title": "Test Job",
+  "description": "Test description",
+  "requirements": "Test",
+  "responsibilities": "Test",
+  "benefits": "Test",
+  "categoryId": 999,
+  "skillIds": [],
+  "tagIds": [],
+  "address": "Street",
+  "city": "City",
+  "state": "State",
+  "country": "Country",
+  "zipCode": "12345",
+  "minSalary": 50000,
+  "maxSalary": 80000,
+  "jobType": "FULL_TIME",
+  "workMode": "REMOTE",
+  "experienceLevel": "JUNIOR",
+  "openings": 1,
+  "applicationDeadLine": "2026-09-15",
+  "expiresAt": "2026-12-31"
+}
+
+### 25. Try to create job without title (should fail)
+POST http://localhost:8083/api/jobs
+Content-Type: application/json
+X-User-Id: 1
+
+{
+  "title": "",
+  "description": "Test description",
+  "requirements": "Test",
+  "responsibilities": "Test",
+  "benefits": "Test",
+  "categoryId": 1,
+  "skillIds": [],
+  "tagIds": [],
+  "address": "Street",
+  "city": "City",
+  "state": "State",
+  "country": "Country",
+  "zipCode": "12345",
+  "minSalary": 50000,
+  "maxSalary": 80000,
+  "jobType": "FULL_TIME",
+  "workMode": "REMOTE",
+  "experienceLevel": "JUNIOR",
+  "openings": 1,
+  "applicationDeadLine": "2026-09-15",
+  "expiresAt": "2026-12-31"
+}
+
+### 26. Delete Job (3) with correct employer
+DELETE http://localhost:8083/api/jobs/3
+X-User-Id: 2
+
+### 27. Try to delete already deleted job (should fail)
+DELETE http://localhost:8083/api/jobs/3
+X-User-Id: 2
+
+### 28. Try to delete job with wrong employer ID (should fail)
+DELETE http://localhost:8083/api/jobs/1
+X-User-Id: 999
