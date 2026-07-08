@@ -9,12 +9,14 @@ import com.jobportal.jobservice.exception.JobCategoryParentException;
 import com.jobportal.jobservice.repository.JobCategoryRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 
 import static com.jobportal.jobservice.util.JobCategoryMapper.toDto;
 
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class JobCategoryServiceImpl implements JobCategoryService {
     private final JobCategoryRepository jobCategoryRepository;
 

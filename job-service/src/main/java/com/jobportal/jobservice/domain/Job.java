@@ -42,10 +42,16 @@ public class Job {
     @ManyToOne(fetch = FetchType.LAZY)
     private JobCategory jobCategory;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(name = "job_skill_mappings",
+            joinColumns = @JoinColumn(name = "job_id"),
+            inverseJoinColumns = @JoinColumn(name = "skill_id"))
     private Set<JobSkill> skills;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(name = "job_tag_mappings",
+            joinColumns = @JoinColumn(name = "job_id"),
+            inverseJoinColumns = @JoinColumn(name = "tag_id"))
     private Set<JobTag> tags;
 
     @Embedded
@@ -73,6 +79,7 @@ public class Job {
     private Integer openings = 1;
     private LocalDate applicationDeadline;
     private LocalDate expiresAt;
+    @Builder.Default
     private Boolean active = true;
 
     @CreationTimestamp

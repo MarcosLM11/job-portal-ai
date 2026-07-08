@@ -19,6 +19,7 @@ public class JobMapper {
         var tags = job.getTags() != null ? job.getTags().stream().map(JobTagMapper::toDto).collect(Collectors.toSet()) : new HashSet<JobTagResponse>();
         return JobResponse.builder()
                 .id(job.getId())
+                .employerId(job.getEmployerId())
                 .title(job.getTitle())
                 .description(job.getDescription())
                 .requirements(job.getRequirements())

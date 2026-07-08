@@ -19,7 +19,6 @@ import static com.jobportal.jobservice.util.JobSkillMapper.toDto;
 @Service
 @RequiredArgsConstructor
 public class JobSkillServiceImpl implements JobSkillService {
-    private static final String ERROR = "Job Skill already exists ";
     private final JobSkillRepository jobSkillRepository;
 
     @Override
@@ -46,13 +45,14 @@ public class JobSkillServiceImpl implements JobSkillService {
     @Override
     public JobSkillResponse getSkillById(Long id) {
         return jobSkillRepository.findById(id)
+                .filter(JobSkill::getActive)
                 .map(JobSkillMapper::toDto)
-                .orElseThrow(() -> new JobSkillNotFoundException(ERROR + id));
+                .orElseThrow(() -> new JobSkillNotFoundException(id));
     }
 
     @Override
     public JobSkillResponse updateSkill(Long id, JobSkillRequest request) {
-        var jobSkill = jobSkillRepository.findById(id).orElseThrow(() -> new JobSkillNotFoundException(ERROR + id));
+        var jobSkill = jobSkillRepository.findById(id).orElseThrow(() -> new JobSkillNotFoundException(id));
 
         if (!jobSkill.getName().equals(request.name()) && jobSkillRepository.existsByName(request.name())) throw new JobSkillAlreadyExistsException();
 
@@ -63,7 +63,7 @@ public class JobSkillServiceImpl implements JobSkillService {
 
     @Override
     public void deleteSkillById(Long id) {
-        var jobSkill = jobSkillRepository.findById(id).orElseThrow(() -> new JobSkillNotFoundException(ERROR + id));
+        var jobSkill = jobSkillRepository.findById(id).orElseThrow(() -> new JobSkillNotFoundException(id));
         jobSkill.setActive(false);
         jobSkillRepository.save(jobSkill);
     }

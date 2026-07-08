@@ -11,6 +11,7 @@ import com.jobportal.jobservice.exception.WrongEmployerException;
 import com.jobportal.jobservice.repository.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Collections;
@@ -20,6 +21,7 @@ import static com.jobportal.jobservice.util.JobMapper.toDto;
 
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class JobServiceImpl implements JobService {
     private final JobRepository jobRepository;
     private final JobCategoryService jobCategoryService;
@@ -32,14 +34,13 @@ public class JobServiceImpl implements JobService {
         var skills = req.skillIds() != null ? jobSkillService.getSkillsByIds(req.skillIds()) : new HashSet<JobSkill>();
         var tags = req.tagIds() != null ? jobTagService.getTagsByIds(req.tagIds()) : new HashSet<JobTag>();
 
-        var companyId=1L;
         var job = Job.builder()
                 .title(req.title())
                 .description(req.description())
                 .requirements(req.requirements())
                 .responsibilities(req.responsibilities())
                 .benefits(req.benefits())
-                .companyId(companyId)
+                .companyId(req.companyId())
                 .employerId(employerId)
                 .jobCategory(category)
                 .skills(skills)
@@ -52,6 +53,7 @@ public class JobServiceImpl implements JobService {
                 .openings(req.openings() != null ? req.openings() : 1)
                 .applicationDeadline(req.applicationDeadLine())
                 .expiresAt(req.expiresAt())
+                .jobStatus(JobStatus.DRAFT)
                 .build();
         var savedJob = jobRepository.save(job);
         return convertToResponse(savedJob);

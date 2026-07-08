@@ -3,6 +3,7 @@ package com.jobportal.jobservice.repository;
 import com.jobportal.jobservice.domain.Job;
 import com.jobportal.jobservice.domain.JobStatus;
 import com.jobportal.jobservice.dto.JobSearchRequest;
+import jakarta.persistence.criteria.Path;
 import jakarta.persistence.criteria.Predicate;
 import org.springframework.data.jpa.domain.Specification;
 import java.util.ArrayList;
@@ -21,13 +22,13 @@ public class JobSpecification {
             if (request.workMode() != null) predicates.add(cb.equal(root.get("workMode"), request.workMode()));
             if (request.experienceLevel() != null) predicates.add(cb.equal(root.get("experienceLevel"), request.experienceLevel()));
             if (request.companyId() != null) predicates.add(cb.equal(root.get("companyId"), request.companyId()));
-            if (request.categoryId() != null) predicates.add(cb.equal(root.get("categoryId"), request.categoryId()));
+            if (request.categoryId() != null) predicates.add(cb.equal(root.get("jobCategory").get("id"), request.categoryId()));
 
             if (request.location() != null && !request.location().isBlank()) {
                 var pattern = "%" + request.location().toLowerCase() + "%";
-                var city = root.get("location").get("city");
-                var state = root.get("location").get("state");
-                var country = root.get("location").get("country");
+                Path<String> city = root.get("location").get("city");
+                Path<String> state = root.get("location").get("state");
+                Path<String> country = root.get("location").get("country");
                 predicates.add(cb.or(
                         cb.like(cb.lower(city),pattern),
                         cb.like(cb.lower(state),pattern),

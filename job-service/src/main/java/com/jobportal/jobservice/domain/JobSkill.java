@@ -24,6 +24,7 @@ public class JobSkill {
     @Column(unique = true)
     private String slug;
     private SkillCategory category;
+    @Builder.Default
     private Boolean active = true;
     @Column(nullable = false, updatable = false)
     @CreationTimestamp

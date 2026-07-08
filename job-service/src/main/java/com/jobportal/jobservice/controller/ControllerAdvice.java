@@ -7,7 +7,6 @@ import com.jobportal.jobservice.exception.JobCategoryAlreadyExistsException;
 import com.jobportal.jobservice.exception.JobCategoryNotFoundException;
 import com.jobportal.jobservice.exception.JobCategoryParentException;
 import com.jobportal.jobservice.exception.JobSkillNotFoundException;
-import com.jobportal.jobservice.exception.JobSkillExistsException;
 import com.jobportal.jobservice.exception.JobSkillAlreadyExistsException;
 import com.jobportal.jobservice.exception.JobTagNotFoundException;
 import com.jobportal.jobservice.exception.JobTagAlreadyExistsException;
@@ -61,12 +60,6 @@ public class ControllerAdvice {
     ProblemDetail handleJobSkillNotFound(JobSkillNotFoundException ex) {
         log.warn("Job Skill Not Found", ex);
         return ProblemDetail.forStatusAndDetail(HttpStatus.NOT_FOUND, ex.getMessage());
-    }
-
-    @ExceptionHandler(JobSkillExistsException.class)
-    ProblemDetail handleJobSkillExists(JobSkillExistsException ex) {
-        log.warn("Job Skill Exists", ex);
-        return ProblemDetail.forStatusAndDetail(HttpStatus.CONFLICT, ex.getMessage());
     }
 
     @ExceptionHandler(JobSkillAlreadyExistsException.class)

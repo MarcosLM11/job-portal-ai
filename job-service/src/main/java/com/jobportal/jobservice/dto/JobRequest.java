@@ -19,6 +19,8 @@ public record JobRequest(
         String requirements,
         String responsibilities,
         String benefits,
+        @NotNull(message="company is required")
+        Long companyId,
         @NotNull(message="category is required")
         Long categoryId,
         Set<Long> skillIds,

@@ -28,8 +28,10 @@ public class JobCategory {
     private String iconUrl;
     @ManyToOne(fetch = FetchType.LAZY)
     private JobCategory parent;
+    @Builder.Default
     @OneToMany(mappedBy = "parent", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<JobCategory> subCategories = new ArrayList<>();
+    @Builder.Default
     private Boolean active = true;
     @Column(nullable=false,updatable=false)
     @CreationTimestamp
