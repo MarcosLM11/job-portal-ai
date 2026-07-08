@@ -1,0 +1,289 @@
+### Variables
+@baseUrl = http://localhost:8080
+@userId = 1
+@companyId = 1
+
+###
+### 1. CREATE COMPANY - POST /api/companies
+###
+POST {{baseUrl}}/api/companies
+Content-Type: application/json
+X-User-Id: {{userId}}
+
+{
+  "name": "Tech Innovations Inc",
+  "tagline": "Building the future with technology",
+  "description": "A leading technology company specializing in AI and cloud solutions",
+  "logoUrl": "https://example.com/logo.png",
+  "coverImageUrl": "https://example.com/cover.png",
+  "website": "https://techinnovations.com",
+  "email": "info@techinnovations.com",
+  "phone": "+1-555-0123",
+  "foundedYear": 2015,
+  "companySize": "LARGE",
+  "companyType": "PRIVATE",
+  "industryType": "TECHNOLOGY",
+  "companyStatus": "PENDING_VERIFICATION",
+  "registrationNumber": "REG-2015-001",
+  "socialLinks": []
+}
+
+> {%
+request.variables.set("companyId", response.body.id);
+%}
+
+###
+### 2. CREATE COMPANY - Invalid email
+###
+POST {{baseUrl}}/api/companies
+Content-Type: application/json
+X-User-Id: {{userId}}
+
+{
+  "name": "Another Company",
+  "tagline": "Another tagline",
+  "description": "Test description",
+  "logoUrl": "https://example.com/logo.png",
+  "coverImageUrl": "https://example.com/cover.png",
+  "website": "https://anothercompany.com",
+  "email": "invalid-email",
+  "phone": "+1-555-0124",
+  "foundedYear": 2020,
+  "companySize": "MEDIUM",
+  "companyType": "STARTUP",
+  "industryType": "FINANCE_BANKING",
+  "companyStatus": "ACTIVE",
+  "registrationNumber": "REG-2020-001",
+  "socialLinks": []
+}
+
+###
+### 3. CREATE COMPANY - Missing required field (name)
+###
+POST {{baseUrl}}/api/companies
+Content-Type: application/json
+X-User-Id: {{userId}}
+
+{
+  "tagline": "Missing name",
+  "description": "Test description",
+  "logoUrl": "https://example.com/logo.png",
+  "coverImageUrl": "https://example.com/cover.png",
+  "website": "https://missingname.com",
+  "email": "test@missingname.com",
+  "phone": "+1-555-0125",
+  "foundedYear": 2019,
+  "companySize": "SMALL",
+  "companyType": "PRIVATE",
+  "industryType": "HEALTHCARE",
+  "companyStatus": "ACTIVE",
+  "registrationNumber": "REG-2019-001",
+  "socialLinks": []
+}
+
+###
+### 4. CREATE COMPANY - Invalid URL
+###
+POST {{baseUrl}}/api/companies
+Content-Type: application/json
+X-User-Id: {{userId}}
+
+{
+  "name": "Invalid URL Company",
+  "tagline": "Invalid URL test",
+  "description": "Test description",
+  "logoUrl": "https://example.com/logo.png",
+  "coverImageUrl": "https://example.com/cover.png",
+  "website": "not-a-valid-url",
+  "email": "test@invalidurl.com",
+  "phone": "+1-555-0126",
+  "foundedYear": 2021,
+  "companySize": "MICRO",
+  "companyType": "STARTUP",
+  "industryType": "TECHNOLOGY",
+  "companyStatus": "PENDING_VERIFICATION",
+  "registrationNumber": "REG-2021-001",
+  "socialLinks": []
+}
+
+###
+### 5. CREATE COMPANY - Invalid founded year (too old)
+###
+POST {{baseUrl}}/api/companies
+Content-Type: application/json
+X-User-Id: {{userId}}
+
+{
+  "name": "Old Company",
+  "tagline": "Founded too long ago",
+  "description": "Test description",
+  "logoUrl": "https://example.com/logo.png",
+  "coverImageUrl": "https://example.com/cover.png",
+  "website": "https://oldcompany.com",
+  "email": "test@oldcompany.com",
+  "phone": "+1-555-0127",
+  "foundedYear": 1500,
+  "companySize": "ENTERPRISE",
+  "companyType": "PRIVATE",
+  "industryType": "MANUFACTURING",
+  "companyStatus": "ACTIVE",
+  "registrationNumber": "REG-1500-001",
+  "socialLinks": []
+}
+
+###
+### 6. GET COMPANY BY ID - GET /api/companies/{companyId}
+###
+GET {{baseUrl}}/api/companies/{{companyId}}
+
+###
+### 7. GET COMPANY BY ID - Non-existent company
+###
+GET {{baseUrl}}/api/companies/99999
+
+###
+### 8. GET MY COMPANY - GET /api/companies/my
+###
+GET {{baseUrl}}/api/companies/my
+X-User-Id: {{userId}}
+
+###
+### 9. GET MY COMPANY - Missing user header
+###
+GET {{baseUrl}}/api/companies/my
+
+###
+### 10. GET ALL COMPANIES - GET /api/companies
+###
+GET {{baseUrl}}/api/companies
+
+###
+### 11. GET ALL COMPANIES - Filter by company type
+###
+GET {{baseUrl}}/api/companies?companyType=STARTUP
+
+###
+### 12. GET ALL COMPANIES - Filter by industry type
+###
+GET {{baseUrl}}/api/companies?industryType=TECHNOLOGY
+
+###
+### 13. GET ALL COMPANIES - Filter by status
+###
+GET {{baseUrl}}/api/companies?companyStatus=ACTIVE
+
+###
+### 14. GET ALL COMPANIES - Multiple filters
+###
+GET {{baseUrl}}/api/companies?companyType=PRIVATE&industryType=FINANCE_BANKING&companyStatus=ACTIVE
+
+###
+### 15. UPDATE COMPANY - PUT /api/companies/{id}
+###
+PUT {{baseUrl}}/api/companies/{{companyId}}
+Content-Type: application/json
+X-User-Id: {{userId}}
+
+{
+  "name": "Tech Innovations Inc - Updated",
+  "tagline": "Updated tagline for our company",
+  "description": "Updated description with new details",
+  "logoUrl": "https://example.com/logo-updated.png",
+  "coverImageUrl": "https://example.com/cover-updated.png",
+  "website": "https://techinnovations-updated.com",
+  "email": "contact@techinnovations.com",
+  "phone": "+1-555-0199",
+  "foundedYear": 2015,
+  "companySize": "ENTERPRISE",
+  "companyType": "PRIVATE",
+  "industryType": "TECHNOLOGY",
+  "companyStatus": "ACTIVE",
+  "registrationNumber": "REG-2015-001-UPD",
+  "socialLinks": []
+}
+
+###
+### 16. UPDATE COMPANY - Invalid field value
+###
+PUT {{baseUrl}}/api/companies/{{companyId}}
+Content-Type: application/json
+X-User-Id: {{userId}}
+
+{
+  "name": "Updated Company",
+  "tagline": "Updated",
+  "description": "Updated description",
+  "logoUrl": "https://example.com/logo.png",
+  "coverImageUrl": "https://example.com/cover.png",
+  "website": "invalid-website",
+  "email": "update@company.com",
+  "phone": "+1-555-0200",
+  "foundedYear": 2015,
+  "companySize": "LARGE",
+  "companyType": "PRIVATE",
+  "industryType": "TECHNOLOGY",
+  "companyStatus": "ACTIVE",
+  "registrationNumber": "REG-UPD",
+  "socialLinks": []
+}
+
+###
+### 17. UPDATE COMPANY - Missing user header
+###
+PUT {{baseUrl}}/api/companies/{{companyId}}
+Content-Type: application/json
+
+{
+  "name": "Tech Innovations Inc - Updated",
+  "tagline": "Updated tagline",
+  "description": "Updated description",
+  "logoUrl": "https://example.com/logo.png",
+  "coverImageUrl": "https://example.com/cover.png",
+  "website": "https://techinnovations.com",
+  "email": "contact@techinnovations.com",
+  "phone": "+1-555-0199",
+  "foundedYear": 2015,
+  "companySize": "ENTERPRISE",
+  "companyType": "PRIVATE",
+  "industryType": "TECHNOLOGY",
+  "companyStatus": "ACTIVE",
+  "registrationNumber": "REG-2015-001-UPD",
+  "socialLinks": []
+}
+
+###
+### 18. VERIFY COMPANY - PATCH /api/companies/{id}/verify
+###
+PATCH {{baseUrl}}/api/companies/{{companyId}}/verify
+
+###
+### 19. VERIFY COMPANY - Non-existent company
+###
+PATCH {{baseUrl}}/api/companies/99999/verify
+
+###
+### 20. DEACTIVATE COMPANY - PATCH /api/companies/{id}/deactivate
+###
+PATCH {{baseUrl}}/api/companies/{{companyId}}/deactivate
+
+###
+### 21. DEACTIVATE COMPANY - Non-existent company
+###
+PATCH {{baseUrl}}/api/companies/99999/deactivate
+
+###
+### 22. DELETE COMPANY - DELETE /api/companies/{id}
+###
+DELETE {{baseUrl}}/api/companies/{{companyId}}
+X-User-Id: {{userId}}
+
+###
+### 23. DELETE COMPANY - Non-existent company
+###
+DELETE {{baseUrl}}/api/companies/99999
+X-User-Id: {{userId}}
+
+###
+### 24. DELETE COMPANY - Missing user header
+###
+DELETE {{baseUrl}}/api/companies/{{companyId}}
