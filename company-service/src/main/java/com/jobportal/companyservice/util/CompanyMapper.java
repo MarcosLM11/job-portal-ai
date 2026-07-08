@@ -33,6 +33,7 @@ public class CompanyMapper {
                 .companyType(company.getCompanyType())
                 .industryType(company.getIndustryType())
                 .companyStatus(company.getCompanyStatus())
+                .verified(company.getIsVerified())
                 .ownerId(company.getOwnerId())
                 .socialLinks(socialLinkResponse)
                 .active(company.getActive())

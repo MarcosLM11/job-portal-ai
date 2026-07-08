@@ -41,6 +41,7 @@ public class Company {
     @Enumerated(EnumType.STRING)
     private CompanyStatus companyStatus;
 
+    @Builder.Default
     private Boolean isVerified = false;
 
     @Column(unique=true)
@@ -52,6 +53,7 @@ public class Company {
     @Builder.Default
     private List<SocialLink> socialLinks = new ArrayList<>();
 
+    @Builder.Default
     private Boolean active = true;
 
     @CreationTimestamp

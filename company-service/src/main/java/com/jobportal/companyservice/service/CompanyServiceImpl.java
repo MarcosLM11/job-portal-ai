@@ -9,6 +9,7 @@ import com.jobportal.companyservice.repository.CompanyRepository;
 import com.jobportal.companyservice.util.CompanyMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -16,10 +17,12 @@ import static com.jobportal.companyservice.util.CompanyMapper.toDto;
 
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class CompanyServiceImpl implements CompanyService {
     private final CompanyRepository companyRepository;
 
     @Override
+    @Transactional
     public CompanyResponse createCompany(Long ownerId, CompanyRequest request) {
 
         if(companyRepository.existsByName(request.name())) throw new CompanyNameAlreadyExistsException("A company with that name already exists, please choose another name.");
@@ -42,6 +45,7 @@ public class CompanyServiceImpl implements CompanyService {
                 .companySize(request.companySize())
                 .companyType(request.companyType())
                 .industryType(request.industryType())
+                .companyStatus(request.companyStatus())
                 .registrationNumber(request.registrationNumber())
                 .ownerId(ownerId)
                 .socialLinks(mapSocialLinks(request.socialLinks()))
@@ -72,6 +76,7 @@ public class CompanyServiceImpl implements CompanyService {
     }
 
     @Override
+    @Transactional
     public CompanyResponse updateCompany(Long companyId, Long ownerId, CompanyRequest request) {
         var company = getCompanyEntityById(companyId);
 
@@ -98,14 +103,17 @@ public class CompanyServiceImpl implements CompanyService {
     }
 
     @Override
+    @Transactional
     public CompanyResponse verifyCompany(Long companyId) {
         var company = getCompanyEntityById(companyId);
         company.setCompanyStatus(CompanyStatus.ACTIVE);
         company.setIsVerified(true);
+        company.setActive(true);
         return toDto(companyRepository.save(company));
     }
 
     @Override
+    @Transactional
     public void deleteCompany(Long companyId, Long ownerId) {
         var company = getCompanyEntityById(companyId);
         assertOwner(company.getOwnerId(),ownerId);
@@ -113,10 +121,12 @@ public class CompanyServiceImpl implements CompanyService {
     }
 
     @Override
+    @Transactional
     public CompanyResponse deactivateCompany(Long companyId) {
         var company = getCompanyEntityById(companyId);
         company.setCompanyStatus(CompanyStatus.SUSPENDED);
         company.setIsVerified(false);
+        company.setActive(false);
         return toDto(companyRepository.save(company));
     }
 

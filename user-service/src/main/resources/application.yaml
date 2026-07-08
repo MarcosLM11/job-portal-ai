@@ -11,7 +11,7 @@ spring:
     show-sql: false
     open-in-view: false
   datasource:
-    url: jdbc:postgresql://localhost:5432/job-portal-users-db
+    url: jdbc:postgresql://localhost:5432/job-portal-db
     username: postgres
     password: postgresPassword
     driver-class-name: org.postgresql.Driver

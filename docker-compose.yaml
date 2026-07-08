@@ -5,7 +5,7 @@ services:
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgresPassword
-      POSTGRES_DB: job-portal-users-db
+      POSTGRES_DB: job-portal-db
     ports:
       - "5432:5432"
     volumes:

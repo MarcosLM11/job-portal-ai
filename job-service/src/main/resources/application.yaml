@@ -6,9 +6,9 @@ spring:
     name: job-service
     description: Job Service
   datasource:
-    url: jdbc:postgresql://localhost:5432/job_service
-    username: job_service_user
-    password: secret
+    url: jdbc:postgresql://localhost:5432/job-portal-db
+    username: postgres
+    password: postgresPassword
     driver-class-name: org.postgresql.Driver
   jpa:
     hibernate:
