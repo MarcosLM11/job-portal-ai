@@ -3,6 +3,9 @@ package com.jobportal.resumeservice.service;
 import com.jobportal.resumeservice.domain.WorkExperience;
 import com.jobportal.resumeservice.dto.AddWorkExperience;
 import com.jobportal.resumeservice.dto.WorkExperienceResponse;
+import com.jobportal.resumeservice.exception.WorkExperienceNotFoundException;
+import com.jobportal.resumeservice.exception.WrongCandidateException;
+import com.jobportal.resumeservice.exception.WrongResumeException;
 import com.jobportal.resumeservice.repository.WorkExperienceRepository;
 import com.jobportal.resumeservice.util.WorkExperienceMapper;
 import lombok.RequiredArgsConstructor;
@@ -48,8 +51,8 @@ public class WorkExperienceServiceImpl implements WorkExperienceService {
     public WorkExperienceResponse updateWorkExperience(Long resumeId, Long candidateId, Long workExperienceId, AddWorkExperience request) {
         var workExperience = getWorkExperienceEntityById(workExperienceId);
 
-        if (!workExperience.getResume().getId().equals(resumeId)) throw new WrongResumeException();
-        if (!workExperience.getResume().getCandidateId().equals(candidateId)) throw new WrongCandidateException();
+        if (!workExperience.getResume().getId().equals(resumeId)) throw new WrongResumeException("Resume ID does not match");
+        if (!workExperience.getResume().getCandidateId().equals(candidateId)) throw new WrongCandidateException("Candidate ID does not match");
 
         workExperience.setCompanyName(request.companyName());
         workExperience.setCompanyLogoUrl(request.companyLogoUrl());
@@ -70,8 +73,8 @@ public class WorkExperienceServiceImpl implements WorkExperienceService {
     @Override
     public void deleteWorkExperience(Long resumeId, Long workExperienceId, Long candidateId) {
         var workExperience = getWorkExperienceEntityById(workExperienceId);
-        if (!workExperience.getResume().getId().equals(resumeId)) throw new WrongResumeException();
-        if (!workExperience.getResume().getCandidateId().equals(candidateId)) throw new WrongCandidateException();
+        if (!workExperience.getResume().getId().equals(resumeId)) throw new WrongResumeException("Resume ID does not match");
+        if (!workExperience.getResume().getCandidateId().equals(candidateId)) throw new WrongCandidateException("Candidate ID does not match");
         workExperienceRepository.delete(workExperience);
     }
 
